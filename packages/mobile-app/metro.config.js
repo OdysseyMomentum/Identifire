@@ -38,11 +38,11 @@ function getConfig(appDir, options = {}) {
         "react-native": path.resolve(appDir, "node_modules", "react-native"),
 
         // Resolve additional nohoist modules depended on by other packages
-        // "react-native-svg": path.resolve(
-        //   appDir,
-        //   "node_modules",
-        //   "react-native-svg"
-        // ),
+        "expo-status-bar": path.resolve(
+          appDir,
+          "node_modules",
+          "expo-status-bar"
+        ),
 
         // Resolve core-js imports to the locally installed version
         "core-js": path.resolve(appDir, "node_modules", "core-js"),

@@ -4,8 +4,12 @@
   "scripts": {},
   "workspaces": {
     "nohoist": [
-      "react-native",
-      "react-native/**"
+      "**/react-native",
+      "**/react-native/**",
+      "**/expo",
+      "**/expo/**",
+      "**/@expo/**",
+      "**/expo-status-bar"
     ],
     "packages": [
       "packages/*"
