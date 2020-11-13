@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "name": "identifier",
+  "scripts": {},
+  "workspaces": [
+    "packages/*"
+  ]
+}
