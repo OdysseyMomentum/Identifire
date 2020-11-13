@@ -2,7 +2,13 @@
   "private": true,
   "name": "identifier",
   "scripts": {},
-  "workspaces": [
-    "packages/*"
-  ]
+  "workspaces": {
+    "nohoist": [
+      "react-native",
+      "react-native/**"
+    ],
+    "packages": [
+      "packages/*"
+    ]
+  }
 }
