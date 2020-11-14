@@ -55,7 +55,8 @@ export const ActiveEvent: React.FunctionComponent = () => {
 
     socket.on('message', (m: WebSocket.Action) => {
       switch (m.type) {
-        case 'mobile->dispatch/participant-location-update':
+        case 'server->dispatch/participant-location-update':
+          map.updateUserPins(m.payload.users);
           break;
         default:
       }

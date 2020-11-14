@@ -11,11 +11,13 @@ export namespace WebSocket {
     | {
         type: 'server->dispatch/participant-location-update';
         payload: {
-          userId: number;
-          location: {
-            latitude: number;
-            longitude: number;
-          };
+          users: Array<{
+            id: number;
+            location: {
+              latitude: number;
+              longitude: number;
+            };
+          }>;
         };
       }
     | {
