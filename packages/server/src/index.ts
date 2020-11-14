@@ -28,7 +28,7 @@ createConnection()
     app.use(cors({ origin: '*' }));
     app.use(bodyParser.json());
     const server = http.createServer(app);
-    const io = new Server(server);
+    const io = new Server(server, { cors: { origin: '*' } });
     setupWsConnect(io);
     // register express routes from defined application routes
     Routes.forEach((route) => {

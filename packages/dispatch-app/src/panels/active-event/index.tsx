@@ -6,6 +6,8 @@ import styled from 'styled-components';
 
 import { RestAPI } from 'common-types';
 
+import { connect, Socket } from 'socket.io-client';
+
 import { Box, Text, Button, Spinner, Textarea } from '@chakra-ui/react';
 
 import { Panel } from '../../components';
@@ -14,7 +16,7 @@ import { useAppContext } from '../../app_context';
 
 import { map } from '../../services/map';
 
-const { useState, useEffect } = React;
+const { useState, useEffect, useRef } = React;
 
 const Banner = styled.div`
   position: absolute;
@@ -34,8 +36,9 @@ export const ActiveEvent: React.FunctionComponent = () => {
   const [event, setEvent] = useState<null | RestAPI.Dispatch.GetEventResponse>(
     null
   );
-  const { api } = useAppContext();
+  const { api, wsUrl } = useAppContext();
   const history = useHistory();
+  const wsRef = useRef<undefined | typeof Socket>();
 
   useEffect(() => {
     (async () => {
@@ -44,8 +47,22 @@ export const ActiveEvent: React.FunctionComponent = () => {
   }, [id]);
 
   useEffect(() => {
-    if (event && !map.hasCurrentEventPin()) {
-      map.addCurrentEventPin({ lat: event.latitude, lon: event.longitude });
+    if (event) {
+      if (!map.hasCurrentEventPin()) {
+        map.addCurrentEventPin({ lat: event.latitude, lon: event.longitude });
+      }
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+      console.log('connecting!');
+      const socket = connect(wsUrl);
+
+      async () => {
+        await new Promise((res) => {
+          socket.on('connect', res);
+        });
+        wsRef.current = socket;
+      };
     }
   }, [event]);
 
