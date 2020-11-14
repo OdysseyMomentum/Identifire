@@ -11,6 +11,8 @@ import {
   Text,
 } from '@chakra-ui/react';
 
+import { EditIcon } from '@chakra-ui/icons';
+
 interface Props {
   label: string;
   value: string;
@@ -32,9 +34,12 @@ export const TextInput: React.FunctionComponent<Props> = ({
           <Text marginRight="5px" fontSize="md">
             {value}
           </Text>
-          <Button color="black" variant="link">
-            Edit
-          </Button>
+          <Button
+            rightIcon={<EditIcon />}
+            size="xsm"
+            color="darkviolet"
+            variant="link"
+          ></Button>
         </Flex>
       </FormControl>
     );
