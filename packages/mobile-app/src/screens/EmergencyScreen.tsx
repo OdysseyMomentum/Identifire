@@ -152,7 +152,7 @@ export default () => {
           onReady={setDirectionsInfo}
           origin={location}
           destination={emergencyLocation}
-          apikey=""
+          apikey={process.env.GOOGLE_MAPS_API_KEY as string}
         />
       </MapView>
     </View>

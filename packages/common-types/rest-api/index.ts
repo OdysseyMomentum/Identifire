@@ -1,25 +1,31 @@
 export namespace RestAPI {
   export namespace User {
-    export interface OnBoardRequest {
-      notificationId: string;
+    export interface OnboardRequest {
+      notificationToken: string;
+    }
+    export interface OnboardResponse {
+      userId: string;
     }
 
-    export interface HackLocationUpdate {
-        locationIndex: string;
-        userId: string;
+    export interface LocationUpdateRequest {
+      locationIndex: string;
+      userId: string;
     }
   }
 
   export namespace Dispatch {
-    export interface CreateEvent {
-      location: {
-        latitude: number;
-        longitude: number;
-      },
-      /**
-       * Range in meters
-       */
-      maxRange: number
+    export interface CreateEventRequest {
+      latitude: number;
+      longitude: number;
+      type: 'fire' | 'heart-attack';
+      nrOfParticipants: number;
+    }
+    export interface CreateEventResponse {}
+
+    export interface GetEventResponse {
+      id: string;
+      latitude: number;
+      longitude: number;
     }
   }
 }

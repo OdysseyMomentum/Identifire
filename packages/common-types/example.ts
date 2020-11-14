@@ -1,9 +1,8 @@
-import {RestAPI} from '.';
+import { RestAPI } from '.';
 
-const body: RestAPI.Dispatch.CreateEvent = {
-  location: {
-    latitude: 123,
-    longitude: 123,
-  },
-  maxRange: 123,
-}
+export const body: RestAPI.Dispatch.CreateEventRequest = {
+  type: 'fire',
+  nrOfParticipants: 10,
+  latitude: 123,
+  longitude: 123,
+};
