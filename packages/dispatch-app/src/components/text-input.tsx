@@ -1,53 +1,32 @@
 import * as React from 'react';
 
-const { useState } = React;
+import { Input } from '@chakra-ui/react';
 
-import {
-  FormControl,
-  Input,
-  FormLabel,
-  Button,
-  Flex,
-  Text,
-} from '@chakra-ui/react';
-
-import { EditIcon } from '@chakra-ui/icons';
+import { EditableField } from './editable-field';
 
 interface Props {
   label: string;
   value: string;
-  initialIsEditable?: boolean;
+  onChange: (ev: any) => void;
 }
 
 export const TextInput: React.FunctionComponent<Props> = ({
   label,
   value,
-  initialIsEditable = false,
+  onChange,
 }) => {
-  const [editable, setEditable] = useState(initialIsEditable);
-
-  if (!editable) {
-    return (
-      <FormControl>
-        <FormLabel>{label}</FormLabel>
-        <Flex>
-          <Text marginRight="5px" fontSize="md">
-            {value}
-          </Text>
-          <Button
-            rightIcon={<EditIcon />}
-            size="xsm"
-            color="darkviolet"
-            variant="link"
-          ></Button>
-        </Flex>
-      </FormControl>
-    );
-  }
-
   return (
-    <FormControl>
-      <Input value={value} onChange={() => {}} />
-    </FormControl>
+    <EditableField label={label} value={value}>
+      {({ onDone }) => (
+        <Input
+          ref={(r) => r && r.focus()}
+          value={value}
+          onChange={(e) => {
+            onChange(e.target.value);
+          }}
+          onBlur={onDone}
+        />
+      )}
+    </EditableField>
   );
 };
