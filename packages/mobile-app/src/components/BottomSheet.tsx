@@ -30,10 +30,10 @@ export default ({
         <Text style={styles.panelSubtitle}>{durationText}</Text>
       </Block>
       <Block row>
-        <Button backgroundColor color="danger">
-          Decline
+        <Button color="danger">Decline</Button>
+        <Button color="success" onPress={onAccept}>
+          Accept
         </Button>
-        <Button color="success">Accept</Button>
       </Block>
     </View>
   );
@@ -57,3 +57,52 @@ export default ({
     />
   );
 };
+
+const styles = StyleSheet.create({
+  panel: {
+    height: 400,
+    padding: 10,
+    backgroundColor: '#f7f5eee8',
+  },
+  textContainer: {
+    marginHorizontal: 8,
+  },
+  header: {
+    backgroundColor: '#f7f5eee8',
+    shadowColor: '#000000',
+    paddingTop: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  panelHeader: {
+    alignItems: 'center',
+  },
+  panelHandle: {
+    width: 40,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#00000040',
+  },
+  panelTitle: {
+    fontSize: 27,
+    height: 35,
+    marginBottom: 5,
+  },
+  panelSubtitle: {
+    fontSize: 18,
+    color: 'gray',
+    marginBottom: 2,
+  },
+  panelButton: {
+    padding: 20,
+    borderRadius: 10,
+    backgroundColor: '#318bfb',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  panelButtonTitle: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+});

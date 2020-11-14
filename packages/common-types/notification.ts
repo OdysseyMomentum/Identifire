@@ -3,5 +3,5 @@ export interface EmergencyNotification {
   credentialTypes: string[];
   latitude: number;
   longitude: number;
-  eventId: string;
+  id: number;
 }

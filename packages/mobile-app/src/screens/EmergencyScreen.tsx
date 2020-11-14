@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
@@ -12,7 +12,6 @@ import {
 } from '../util/location';
 import BottomSheet from '../components/BottomSheet';
 import { acceptEvent, getSocket } from '../util/websocket';
-import { Socket } from 'socket.io-client';
 
 interface DirectionsInfo {
   distance: number;
@@ -74,9 +73,9 @@ export default ({
           ...currentLocation,
         }}
         showsUserLocation={true}
-        pitchEnabled={false}
-        rotateEnabled={false}
-        scrollEnabled={false}
+        // pitchEnabled={false}
+        // rotateEnabled={false}
+        // scrollEnabled={false}
       >
         <Marker coordinate={emergencyLocation} />
         <MapViewDirections
