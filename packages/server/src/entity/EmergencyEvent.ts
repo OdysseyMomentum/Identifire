@@ -1,19 +1,20 @@
-import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
 export class EmergencyEvent {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  @Column()
+  latitude: number;
 
-    @Column()
-    latitude: number
+  @Column()
+  longitude: number;
 
-    @Column()
-    longitude: number
+  @Column()
+  address: string;
 
-
-    testFunction(): void {
-        console.log('something')
-    }
+  testFunction(): void {
+    console.log('something');
+  }
 }

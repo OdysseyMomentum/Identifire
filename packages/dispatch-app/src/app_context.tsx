@@ -1,13 +1,25 @@
 import * as React from 'react';
 
-const { createContext, useContext } = React;
+const { createContext, useContext, useState } = React;
 
-const AppContext = createContext({});
+import { createAPI } from './lib/api';
 
-interface Value {}
+interface Value {
+  api: ReturnType<typeof createAPI>;
+}
+
+const AppContext = createContext<Value>(null as any);
 
 export const AppContextProvider: React.FunctionComponent = ({ children }) => {
-  return <AppContext.Provider value={{}}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider
+      value={{
+        api: createAPI({ baseUrl: process.env.SERVER_URL }),
+      }}
+    >
+      {children}
+    </AppContext.Provider>
+  );
 };
 
 export const useAppContext = () => {
