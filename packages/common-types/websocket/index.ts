@@ -37,7 +37,7 @@ export namespace WebSocket {
   export interface SubscribeToEvent {
     type: 'dispatch->server/subscribe-to-event';
     payload: {
-      eventId: string;
+      eventId: number;
     };
   }
 

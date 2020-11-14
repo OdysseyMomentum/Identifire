@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import 'reflect-metadata';
-import { createConnection, getRepository } from 'typeorm';
+import { createConnection, getRepository, Repository } from 'typeorm';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
@@ -12,6 +12,8 @@ import { WebSocket } from 'common-types';
 import { User } from './entity/User';
 import { EmergencyEvent } from './entity/EmergencyEvent';
 import { eventNames } from 'process';
+import { CredentialType } from './entity/CredentialType';
+import { EmergencyEventType } from './entity/EmergencyEventType';
 
 dotenv.config();
 
@@ -26,33 +28,70 @@ function validateUserCredentials(
   return true;
 }
 
+async function handleUserAcceptEvent(
+  action: WebSocket.AcceptEvent, 
+  userRepo: Repository<User>, 
+  emergencyEventRepo: Repository<EmergencyEvent>, 
+  credentialTypeRepo: Repository<CredentialType>, 
+  socket: Socket
+  ) {
+  let user = await userRepo.findOne(action.payload.userId);
+
+  let searchCriteria = []
+
+  for (const c of action.payload.credentials) {
+    searchCriteria.push({
+      name: c
+    })
+  }
+  const credentialObjects = await credentialTypeRepo.find({
+    where: searchCriteria
+  })
+
+  user.credentialTypes = credentialObjects
+  user.webSocketConnection = socket;
+  let emergency = await emergencyEventRepo.findOne(
+    action.payload.eventId
+  );
+  const requiredCreds = emergency.emergencyType.credentialTypes.map(
+    (x) => x.name
+  );
+  const userCreds = action.payload.credentials.map((x) => x.type);
+  if (!validateUserCredentials(userCreds, requiredCreds)) {
+    console.error(
+      'User credentials are not sufficient, ignoring request'
+    );
+    return;
+  }
+
+  emergency.users.push(user);
+  await emergencyEventRepo.save(emergency);
+  await userRepo.save(user)
+}
+
 function setupWsConnect(io: Server) {
   let userRepo = getRepository(User);
   let emergencyEventRepo = getRepository(EmergencyEvent);
+  let credentialTypeRepo = getRepository(CredentialType);
   io.on('connection', (socket: Socket) => {
     socket.on('msg', async (action: WebSocket.Action) => {
       switch (action.type) {
         case 'mobile->server/accept-event':
-          console.log('nanana')
-          
-          let user = await userRepo.findOne(action.payload.userId);
-          user.webSocketConnection = socket;
-          let emergency = await emergencyEventRepo.findOne(
-            action.payload.eventId
-          );
-          const requiredCreds = emergency.emergencyType.credentialTypes.map(
-            (x) => x.name
-          );
-          const userCreds = action.payload.credentials.map((x) => x.type);
-          if (!validateUserCredentials(userCreds, requiredCreds)) {
-            console.error(
-              'User credentials are not sufficient, ignoring request'
-            );
-            return;
-          }
-
-          emergency.users.push(user);
-          emergencyEventRepo.save(emergency);
+          await handleUserAcceptEvent(action, userRepo, emergencyEventRepo, credentialTypeRepo, socket)
+          break;
+        case 'mobile->dispatch/participant-location-update':
+          const user = await userRepo.findOne(action.payload.userId)
+          user.latitude = action.payload.location.latitude
+          user.longitude = action.payload.location.longitude
+          await userRepo.save(user)
+          break;
+        case 'dispatch->server/subscribe-to-event':
+          setInterval(async () => {
+            let event = await emergencyEventRepo.findOne(action.payload.eventId)
+            socket.emit('msg', [
+              ...event.users
+            ])
+          }, 5000)
           break;
       }
     });
