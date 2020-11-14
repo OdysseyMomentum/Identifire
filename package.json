@@ -3,16 +3,34 @@
   "name": "identifier",
   "scripts": {},
   "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
     "nohoist": [
       "**/react-native",
       "**/react-native/**",
       "**/expo",
       "**/expo/**",
       "**/@expo/**",
-      "**/expo-status-bar"
-    ],
-    "packages": [
-      "packages/*"
+      "**/expo-status-bar",
+      "**/react-native-maps",
+      "**/expo-location",
+      "**/expo-application",
+      "**/expo-notifications",
+      "**/expo-permissions",
+      "**/galio-framework",
+      "**/reanimated-bottom-sheet",
+      "**/react-native-gesture-handler",
+      "**/react-native-reanimated",
+      "**/expo-constants",
+      "**/react-native-maps-directions",
+      "**/@react-navigation/native",
+      "**/@react-navigation/stack",
+      "**/react-native-gesture-handler",
+      "**/react-native-reanimated",
+      "**/react-native-screens",
+      "**/react-native-safe-area-context",
+      "**/@react-native-community/masked-view"
     ]
   },
   "devDependencies": {

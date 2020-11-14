@@ -13,11 +13,14 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "For location",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "For location",
+        "NSLocationAlwaysUsageDescription": "For location"
+      }
     },
     "android": {
       "adaptiveIcon": {

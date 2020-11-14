@@ -5,9 +5,9 @@
  * eslint-env node, es6
  */
 
-const blacklist = require("metro-config/src/defaults/blacklist");
-const getWorkspaces = require("get-yarn-workspaces");
-const path = require("path");
+const blacklist = require('metro-config/src/defaults/blacklist');
+const getWorkspaces = require('get-yarn-workspaces');
+const path = require('path');
 
 function getConfig(appDir, options = {}) {
   const workspaces = getWorkspaces(appDir);
@@ -15,9 +15,38 @@ function getConfig(appDir, options = {}) {
   // Add additional Yarn workspace package roots to the module map
   // https://bit.ly/2LHHTP0
   const watchFolders = [
-    path.resolve(appDir, "..", "..", "node_modules"),
+    path.resolve(appDir, '..', '..', 'node_modules'),
     ...workspaces.filter((workspaceDir) => !(workspaceDir === appDir)),
   ];
+  const extraNodeModules = [
+    'react-native',
+    'react-native-gesture-handler',
+    'react-native-reanimated',
+    'reanimated-bottom-sheet',
+    'galio-framework',
+    'expo-status-bar',
+    'react-native-maps',
+    'expo-location',
+    'expo-application',
+    'expo-permissions',
+    'expo-notifications',
+    'core-js',
+    'expo-constants',
+    'react-native-maps-directions',
+    '@react-navigation/native',
+    '@react-navigation/stack',
+    'react-native-gesture-handler',
+    'react-native-reanimated',
+    'react-native-screens',
+    'react-native-safe-area-context',
+    '@react-native-community/masked-view',
+  ].reduce(
+    (prev, curr) => ({
+      ...prev,
+      [curr]: path.resolve(appDir, 'node_modules', curr),
+    }),
+    {}
+  );
 
   return {
     watchFolders,
@@ -33,20 +62,7 @@ function getConfig(appDir, options = {}) {
         // http://bit.ly/2LJ7V4b
         // /myapp-ui[\/\\]node_modules[/\\]react-native-svg[/\\].*/,
       ]),
-      extraNodeModules: {
-        // Resolve all react-native module imports to the locally-installed version
-        "react-native": path.resolve(appDir, "node_modules", "react-native"),
-
-        // Resolve additional nohoist modules depended on by other packages
-        "expo-status-bar": path.resolve(
-          appDir,
-          "node_modules",
-          "expo-status-bar"
-        ),
-
-        // Resolve core-js imports to the locally installed version
-        "core-js": path.resolve(appDir, "node_modules", "core-js"),
-      },
+      extraNodeModules,
     },
   };
 }
