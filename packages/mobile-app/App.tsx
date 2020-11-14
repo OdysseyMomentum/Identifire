@@ -8,6 +8,7 @@ import * as Permissions from 'expo-permissions';
 import EmergencyScreen from './src/screens/EmergencyScreen';
 import { EmergencyNotification } from 'common-types';
 import { getLocation, LocationType } from './src/util/location';
+import { onboard } from './src/util/api';
 
 function Home() {
   return <View style={styles.container}></View>;
@@ -33,6 +34,12 @@ export default () => {
       });
     });
   }, []);
+
+  useEffect(() => {
+    if (expoPushToken) {
+      onboard(expoPushToken);
+    }
+  }, [expoPushToken]);
 
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) =>
