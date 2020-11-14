@@ -1,14 +1,18 @@
 import * as React from 'react';
 
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+
 const { useState } = React;
+
+import { map } from './services/map';
 
 import { MAP_Z_INDEX, CONTROLS_Z_INDEX } from './constants';
 
 import { Overlay } from './components';
 
-import { CreateEvent } from './features/create-event';
+import { CreateEvent, ActiveEvent } from './panels';
 
-import { map } from './features/map';
+import { useAppContext } from './app_context';
 
 const { useRef, useEffect } = React;
 
@@ -18,6 +22,7 @@ export const App: React.FunctionComponent = () => {
   const mapBoxContainerRef = useRef<HTMLDivElement | undefined>();
 
   const [mapMounted, setMapMounted] = useState(false);
+  const a = useAppContext();
 
   useEffect(() => {
     map.setMap(
@@ -35,7 +40,13 @@ export const App: React.FunctionComponent = () => {
     <div style={{ position: 'relative', height: '100vh', width: '100vw' }}>
       <Overlay level={MAP_Z_INDEX} ref={mapBoxContainerRef} />
       <Overlay level={CONTROLS_Z_INDEX} style={{ pointerEvents: 'none' }}>
-        {mapMounted && <CreateEvent />}
+        <BrowserRouter>
+          <Switch>
+            <Route path="/event/:id">{mapMounted && <ActiveEvent />}</Route>
+            <Route path="/">{mapMounted && <CreateEvent />}</Route>
+          </Switch>
+        </BrowserRouter>
+        {/* {mapMounted && <CreateEvent />} */}
       </Overlay>
     </div>
   );

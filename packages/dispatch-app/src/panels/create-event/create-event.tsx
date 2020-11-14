@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import { useHistory } from 'react-router-dom';
+
 import axios from 'axios';
 
 const { useEffect } = React;
@@ -10,7 +12,7 @@ import { Formik, Field } from 'formik';
 
 import { Panel, TextInput, Dropdown } from '../../components';
 
-import { map } from '../map';
+import { map } from '../../services/map';
 
 const HARDCODED_EMERGENCY_ADDRESS = '80 biltstraat netherlands';
 
@@ -29,6 +31,8 @@ export const CreateEvent: React.FunctionComponent = () => {
     })();
   }, []);
 
+  const history = useHistory();
+
   return (
     <Panel>
       <Box padding="1rem" borderRadius="md" backgroundColor="white">
@@ -41,9 +45,12 @@ export const CreateEvent: React.FunctionComponent = () => {
             type: 'Fire',
             nrOfParticipants: 2,
           }}
-          onSubmit={() => {}}
+          onSubmit={() => {
+            console.log('do stuff');
+            history.push('/event/123');
+          }}
         >
-          {({ setFieldValue }) => {
+          {({ setFieldValue, submitForm }) => {
             return (
               <>
                 <Box marginBottom="1.2rem">
@@ -83,13 +90,7 @@ export const CreateEvent: React.FunctionComponent = () => {
                   </Field>
                 </Box>
                 <Box marginBottom="0.5rem">
-                  <Button
-                    onClick={() => {
-                      console.log('do something!');
-                    }}
-                  >
-                    Create event
-                  </Button>
+                  <Button onClick={submitForm}>Create event</Button>
                 </Box>
               </>
             );

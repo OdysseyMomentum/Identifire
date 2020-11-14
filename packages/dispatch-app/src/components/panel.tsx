@@ -5,6 +5,6 @@ export const Panel = styled.div`
   width: 500px;
   min-height: 250px;
   position: relative;
-  top: 50px;
+  top: 3rem;
   left: 50px;
 `;
