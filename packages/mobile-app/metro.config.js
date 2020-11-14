@@ -40,6 +40,7 @@ function getConfig(appDir, options = {}) {
     'react-native-screens',
     'react-native-safe-area-context',
     '@react-native-community/masked-view',
+    'react-native-dotenv',
   ].reduce(
     (prev, curr) => ({
       ...prev,

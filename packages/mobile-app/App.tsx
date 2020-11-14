@@ -1,19 +1,38 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 import { Subscription } from '@unimodules/core';
 
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import EmergencyScreen from './src/screens/EmergencyScreen';
+import { EmergencyNotification } from 'common-types';
+import { getLocation, LocationType } from './src/util/location';
 
-const Stack = createStackNavigator();
+function Home() {
+  return <View style={styles.container}></View>;
+}
 
 export default () => {
   const [expoPushToken, setExpoPushToken] = useState<string | undefined>();
   const responseListener = useRef<Subscription>();
+  const notificationListener = useRef<Subscription>();
+  const [emergencyNotification, setEmergencyNotification] = useState<
+    EmergencyNotification | undefined
+  >();
+  const [location, setLocation] = useState<LocationType>({
+    latitude: 0,
+    longitude: 0,
+  });
+
+  useEffect(() => {
+    getLocation().then((location) => {
+      setLocation({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+    });
+  }, []);
 
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) =>
@@ -22,27 +41,38 @@ export default () => {
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener(
       (response) => {
-        console.log(response);
+        const emergency = (response.notification.request.content
+          .data as unknown) as EmergencyNotification;
+
+        setEmergencyNotification(emergency);
+      }
+    );
+
+    notificationListener.current = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        const emergency = (notification.request.content
+          .data as unknown) as EmergencyNotification;
+
+        setEmergencyNotification(emergency);
       }
     );
 
     return () => {
       Notifications.removeNotificationSubscription(responseListener as any);
+      Notifications.removeNotificationSubscription(notificationListener as any);
     };
   }, []);
 
-  function Home() {
-    return <View style={styles.container}></View>;
+  if (emergencyNotification && location.latitude !== 0) {
+    return (
+      <EmergencyScreen
+        emergencyNotification={emergencyNotification}
+        currentLocation={location}
+      />
+    );
   }
 
-  return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="Emergency" component={EmergencyScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+  return <Home />;
 };
 
 async function registerForPushNotificationsAsync() {
