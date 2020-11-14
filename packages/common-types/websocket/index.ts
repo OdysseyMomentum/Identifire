@@ -1,26 +1,33 @@
 export namespace WebSocket {
-  export interface Action {
-    type: string;
-    payload: Record<string, unknown>;
-  }
-
-  export namespace User {
-    export interface AcceptEventAction {
-      type: 'accept-event';
-      payload: {
-        eventId: string;
-        userId: string;
-        credentials: Credential[];
+  export type Action =
+    | {
+        type: 'mobile->server/accept-event';
+        payload: {
+          eventId: string;
+          userId: string;
+          credentials: Credential[];
+        };
+      }
+    | {
+        type: 'server->dispatch/participant-location-update';
+        payload: {
+          userId: number;
+          location: {
+            latitude: number;
+            longitude: number;
+          };
+        };
+      }
+    | {
+        type: 'dispatch->server/subscribe-to-event';
+        payload: {
+          eventId: string;
+        };
+      }
+    | {
+        type: 'mobile<->dispatch/chat';
+        payload: {
+          content: string;
+        };
       };
-    }
-  }
-
-  export namespace Dispatch {}
-
-  export interface ChatAction {
-    type: 'chat';
-    payload: {
-      content: string;
-    };
-  }
 }

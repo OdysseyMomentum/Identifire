@@ -21,6 +21,21 @@ class MyMap {
     return this.addPin({ lat, lon, type: 'event' });
   }
 
+  updateUserPins(
+    users: Array<{ id: number; latitude: number; longitude: number }>
+  ) {
+    users.forEach((user) => {
+      if (this.markers.users[user.id]) {
+        this.markers.users[user.id].setLngLat({
+          lat: user.latitude,
+          lon: user.longitude,
+        });
+      } else {
+        this.markers.users[user.id] = new mapboxgl.Marker({});
+      }
+    });
+  }
+
   hasCurrentEventPin() {
     return !!this.markers.currentEvent;
   }

@@ -4,7 +4,7 @@ import { useHistory, useParams } from 'react-router-dom';
 
 import styled from 'styled-components';
 
-import { RestAPI } from 'common-types';
+import { RestAPI, WebSocket } from 'common-types';
 
 import { connect, Socket } from 'socket.io-client';
 
@@ -40,6 +40,28 @@ export const ActiveEvent: React.FunctionComponent = () => {
   const history = useHistory();
   const wsRef = useRef<undefined | typeof Socket>();
 
+  const setupWs = async () => {
+    const socket = connect(wsUrl);
+
+    await new Promise((res) => {
+      socket.on('connect', res);
+    });
+    wsRef.current = socket;
+    const subscribeMessage: WebSocket.Action = {
+      type: 'dispatch->server/subscribe-to-event',
+      payload: { eventId: event.id },
+    };
+    socket.emit('message', subscribeMessage);
+
+    socket.on('message', (m: WebSocket.Action) => {
+      switch (m.type) {
+        case 'mobile->dispatch/participant-location-update':
+          break;
+        default:
+      }
+    });
+  };
+
   useEffect(() => {
     (async () => {
       setEvent(await api.dispatchEvent.get(id));
@@ -54,15 +76,7 @@ export const ActiveEvent: React.FunctionComponent = () => {
       if (wsRef.current) {
         wsRef.current.close();
       }
-      console.log('connecting!');
-      const socket = connect(wsUrl);
-
-      async () => {
-        await new Promise((res) => {
-          socket.on('connect', res);
-        });
-        wsRef.current = socket;
-      };
+      setupWs();
     }
   }, [event]);
 
