@@ -1,9 +1,19 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
+import { EmergencyEventType } from './EmergencyEventType';
+import { User } from './User';
 
 @Entity()
 export class EmergencyEvent {
   @PrimaryGeneratedColumn()
   id: number;
+
+  
 
   @Column()
   latitude: number;
@@ -14,7 +24,12 @@ export class EmergencyEvent {
   @Column()
   address: string;
 
-  testFunction(): void {
-    console.log('something');
-  }
+  @ManyToOne(
+    () => EmergencyEventType,
+    (emergencyEventType) => emergencyEventType.emergencyEvents
+  )
+  emergencyType: EmergencyEventType;
+
+  @OneToMany(() => User, (user) => user.activeEmergencyEvent)
+  users: User[];
 }

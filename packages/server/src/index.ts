@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import 'reflect-metadata';
-import { createConnection } from 'typeorm';
+import { createConnection, getRepository } from 'typeorm';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
@@ -8,14 +8,53 @@ import { Request, Response } from 'express';
 import { Routes } from './routes';
 import * as http from 'http';
 import { Server, Socket } from 'socket.io';
+import { WebSocket } from 'common-types';
+import { User } from './entity/User';
+import { EmergencyEvent } from './entity/EmergencyEvent';
+import { eventNames } from 'process';
 
 dotenv.config();
 
+function validateUserCredentials(
+  userCreds: string[],
+  requiredCreds: string[]
+): boolean {
+  const overlappingCreds = userCreds.filter((x) => requiredCreds.includes(x));
+  if (overlappingCreds.length <= 1) {
+    return false;
+  }
+  return true;
+}
+
 function setupWsConnect(io: Server) {
+  let userRepo = getRepository(User);
+  let emergencyEventRepo = getRepository(EmergencyEvent);
   io.on('connection', (socket: Socket) => {
-    socket.on('hi', (event) => {
-      console.log('ihdidjidjidjdijdij');
-      console.log(event);
+    socket.on('msg', async (action: WebSocket.Action) => {
+      switch (action.type) {
+        case 'mobile->server/accept-event':
+          console.log('nanana')
+          
+          let user = await userRepo.findOne(action.payload.userId);
+          user.webSocketConnection = socket;
+          let emergency = await emergencyEventRepo.findOne(
+            action.payload.eventId
+          );
+          const requiredCreds = emergency.emergencyType.credentialTypes.map(
+            (x) => x.name
+          );
+          const userCreds = action.payload.credentials.map((x) => x.type);
+          if (!validateUserCredentials(userCreds, requiredCreds)) {
+            console.error(
+              'User credentials are not sufficient, ignoring request'
+            );
+            return;
+          }
+
+          emergency.users.push(user);
+          emergencyEventRepo.save(emergency);
+          break;
+      }
     });
   });
 }

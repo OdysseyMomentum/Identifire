@@ -1,3 +1,5 @@
+import { Credential } from "..";
+
 export namespace WebSocket {
   export interface AcceptEvent {
     type: 'mobile->server/accept-event';

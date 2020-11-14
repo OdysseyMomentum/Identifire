@@ -37,7 +37,7 @@ const userRoutes = [
     },
     {
         method: "put",
-        route: '/user/update',
+        route: '/user/location',
         controller: UserController,
         action: "updateUserIndex"
     }
