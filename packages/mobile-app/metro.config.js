@@ -41,6 +41,7 @@ function getConfig(appDir, options = {}) {
     'react-native-safe-area-context',
     '@react-native-community/masked-view',
     'react-native-dotenv',
+    '@react-native-community/async-storage',
   ].reduce(
     (prev, curr) => ({
       ...prev,

@@ -1,10 +1,10 @@
 export namespace RestAPI {
   export namespace User {
     export interface OnboardRequest {
-      notificationToken: string;
+      notificationId: string;
     }
     export interface OnboardResponse {
-      userId: string;
+      userId: number;
     }
 
     export interface LocationUpdateRequest {

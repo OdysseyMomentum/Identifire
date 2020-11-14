@@ -31,7 +31,8 @@
       "**/react-native-screens",
       "**/react-native-safe-area-context",
       "**/@react-native-community/masked-view",
-      "**/react-native-dotenv"
+      "**/react-native-dotenv",
+      "**/@react-native-community/async-storage"
     ]
   },
   "devDependencies": {

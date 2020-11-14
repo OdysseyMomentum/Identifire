@@ -11,6 +11,8 @@ import {
   LONGITUDE_DELTA,
 } from '../util/location';
 import BottomSheet from '../components/BottomSheet';
+import { acceptEvent, getSocket } from '../util/websocket';
+import { Socket } from 'socket.io-client';
 
 interface DirectionsInfo {
   distance: number;
@@ -20,10 +22,13 @@ interface DirectionsInfo {
 export default ({
   emergencyNotification,
   currentLocation,
+  userId,
 }: {
   emergencyNotification: EmergencyNotification;
   currentLocation: LocationType;
+  userId: number;
 }) => {
+  const [socket, setSocket] = useState<SocketIOClient.Socket | undefined>();
   const [directionsInfo, setDirectionsInfo] = useState<DirectionsInfo>({
     distance: 0,
     duration: 0,
@@ -34,7 +39,24 @@ export default ({
     longitude: emergencyNotification.longitude,
   };
 
-  const onAccept = () => {};
+  const onAccept = () => {
+    async function accept() {
+      const socket = await getSocket();
+      setSocket(socket);
+
+      socket.on('message', (event: any) => {
+        console.log('message', event);
+      });
+
+      await acceptEvent(socket, {
+        credentials: [],
+        eventId: emergencyNotification.eventId,
+        userId,
+      });
+    }
+
+    accept();
+  };
 
   return (
     <View style={styles.container}>

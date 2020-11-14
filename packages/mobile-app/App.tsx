@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Subscription } from '@unimodules/core';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
-import * as Permissions from 'expo-permissions';
 import EmergencyScreen from './src/screens/EmergencyScreen';
 import { EmergencyNotification } from 'common-types';
 import { getLocation, LocationType } from './src/util/location';
 import { onboard } from './src/util/api';
+import { registerForPushNotificationsAsync } from './src/util/notification';
 
 function Home() {
   return <View style={styles.container}></View>;
@@ -21,6 +21,7 @@ export default () => {
   const [emergencyNotification, setEmergencyNotification] = useState<
     EmergencyNotification | undefined
   >();
+  const [userId, setUserId] = useState<undefined | number>();
   const [location, setLocation] = useState<LocationType>({
     latitude: 0,
     longitude: 0,
@@ -36,8 +37,22 @@ export default () => {
   }, []);
 
   useEffect(() => {
-    if (expoPushToken) {
-      onboard(expoPushToken);
+    async function onboardUser() {
+      const userId = await AsyncStorage.getItem('userId');
+
+      if (!userId) {
+        const userId = await onboard(expoPushToken!);
+        console.log('onboarding complete, got userId:', userId);
+        await AsyncStorage.setItem('userId', String(userId));
+        setUserId(userId);
+      } else {
+        console.log('retrieved userId from storage:', userId);
+        setUserId(Number(userId));
+      }
+    }
+
+    if (expoPushToken && !userId) {
+      onboardUser();
     }
   }, [expoPushToken]);
 
@@ -48,6 +63,7 @@ export default () => {
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener(
       (response) => {
+        console.log('got response');
         const emergency = (response.notification.request.content
           .data as unknown) as EmergencyNotification;
 
@@ -57,6 +73,8 @@ export default () => {
 
     notificationListener.current = Notifications.addNotificationReceivedListener(
       (notification) => {
+        console.log('got notification');
+
         const emergency = (notification.request.content
           .data as unknown) as EmergencyNotification;
 
@@ -70,41 +88,18 @@ export default () => {
     };
   }, []);
 
-  if (emergencyNotification && location.latitude !== 0) {
+  if (emergencyNotification && location.latitude !== 0 && userId) {
     return (
       <EmergencyScreen
         emergencyNotification={emergencyNotification}
         currentLocation={location}
+        userId={userId}
       />
     );
   }
 
   return <Home />;
 };
-
-async function registerForPushNotificationsAsync() {
-  let token;
-  if (Constants.isDevice) {
-    const { status: existingStatus } = await Permissions.getAsync(
-      Permissions.NOTIFICATIONS
-    );
-    let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
-      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-      finalStatus = status;
-    }
-    if (finalStatus !== 'granted') {
-      alert('Failed to get push token for push notification!');
-      return;
-    }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
-  } else {
-    alert('Must use physical device for Push Notifications');
-  }
-
-  return token;
-}
 
 const styles = StyleSheet.create({
   container: {
