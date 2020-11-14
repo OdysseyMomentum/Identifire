@@ -4,4 +4,5 @@ export interface EmergencyNotification {
   latitude: number;
   longitude: number;
   id: number;
+  address: string;
 }
