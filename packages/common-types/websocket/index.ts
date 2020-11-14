@@ -2,13 +2,13 @@ export namespace WebSocket {
   export interface AcceptEvent {
     type: 'mobile->server/accept-event';
     payload: {
-      eventId: string;
+      eventId: number;
       userId: number;
       credentials: Credential[];
     };
   }
 
-  export interface UpdateLocation {
+  export interface ServerUpdateLocation {
     type: 'server->dispatch/participant-location-update';
     payload: {
       users: Array<{
@@ -18,6 +18,17 @@ export namespace WebSocket {
           longitude: number;
         };
       }>;
+    };
+  }
+
+  export interface MobileUpdateLocation {
+    type: 'mobile->dispatch/participant-location-update';
+    payload: {
+      userId: number;
+      location: {
+        latitude: number;
+        longitude: number;
+      };
     };
   }
 
@@ -34,5 +45,10 @@ export namespace WebSocket {
       content: string;
     };
   }
-  export type Action = AcceptEvent | UpdateLocation | SubscribeToEvent | Chat;
+  export type Action =
+    | AcceptEvent
+    | ServerUpdateLocation
+    | MobileUpdateLocation
+    | SubscribeToEvent
+    | Chat;
 }

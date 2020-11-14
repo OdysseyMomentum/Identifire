@@ -22,3 +22,27 @@ export async function acceptEvent(
 
   socket.send(action);
 }
+
+export async function updateLocation(
+  socket: SocketIOClient.Socket,
+  payload: WebSocketType.UpdateLocation['payload']
+) {
+  const action: WebSocketType.UpdateLocation = {
+    type: 'server->dispatch/participant-location-update',
+    payload,
+  };
+
+  socket.send(action);
+}
+
+export async function sendChat(
+  socket: SocketIOClient.Socket,
+  payload: WebSocketType.Chat['payload']
+) {
+  const action: WebSocketType.Chat = {
+    type: 'mobile<->dispatch/chat',
+    payload,
+  };
+
+  socket.send(action);
+}

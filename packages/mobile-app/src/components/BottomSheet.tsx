@@ -9,12 +9,14 @@ export default ({
   //   eventType,
   distance,
   duration,
+  address,
   onAccept,
 }: {
   title: string;
   //   eventType: string;
   distance: number;
   duration: number;
+  address: string;
   onAccept: () => void;
 }) => {
   const bottomSheet = useRef(null);
@@ -28,6 +30,7 @@ export default ({
         {/* <Text style={styles.panelSubtitle}>{eventType}</Text> */}
         <Text style={styles.panelSubtitle}>{distanceText}</Text>
         <Text style={styles.panelSubtitle}>{durationText}</Text>
+        <Text style={styles.panelSubtitle}>{address}</Text>
       </Block>
       <Block row>
         <Button color="danger">Decline</Button>
@@ -49,7 +52,7 @@ export default ({
   return (
     <BottomSheetBase
       ref={bottomSheet}
-      snapPoints={[400]}
+      snapPoints={[425]}
       renderContent={renderInner}
       renderHeader={renderHeader}
       enabledInnerScrolling={false}

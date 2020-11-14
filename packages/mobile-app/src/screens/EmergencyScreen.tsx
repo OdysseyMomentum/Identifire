@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
@@ -9,6 +9,7 @@ import {
   LATITUDE_DELTA,
   LocationType,
   LONGITUDE_DELTA,
+  watchLocation,
 } from '../util/location';
 import BottomSheet from '../components/BottomSheet';
 import { acceptEvent, getSocket } from '../util/websocket';
@@ -32,11 +33,25 @@ export default ({
     distance: 0,
     duration: 0,
   });
+  const [locationWatcher, setLocationWatcher] = useState<
+    | {
+        remove(): void;
+      }
+    | undefined
+  >();
 
   const emergencyLocation: LocationType = {
     latitude: emergencyNotification.latitude,
     longitude: emergencyNotification.longitude,
   };
+
+  useEffect(() => {
+    return () => {
+      if (locationWatcher) {
+        locationWatcher.remove();
+      }
+    };
+  }, []);
 
   const onAccept = () => {
     async function accept() {
@@ -49,9 +64,11 @@ export default ({
 
       await acceptEvent(socket, {
         credentials: [],
-        eventId: emergencyNotification.eventId,
+        eventId: emergencyNotification.id,
         userId,
       });
+
+      setLocationWatcher(await watchLocation(() => {}));
     }
 
     accept();
@@ -64,6 +81,7 @@ export default ({
         distance={directionsInfo.distance}
         duration={directionsInfo.duration}
         title={emergencyNotification.title}
+        address={emergencyNotification.address}
       />
       <MapView
         style={styles.mapStyle}
