@@ -1,17 +1,36 @@
+import * as dotenv from 'dotenv'
 import "reflect-metadata";
 import {createConnection} from "typeorm";
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import {Request, Response} from "express";
 import {Routes} from "./routes";
-import {User} from "./entity/User";
+import * as http from 'http'
+import { Server, Socket } from 'socket.io'
+
+import { open } from 'inspector';
+dotenv.config()
+
+
+function setupWsConnect(io: Server) {
+    io.on('connection', (socket: Socket) => {
+        socket.on('hi', event => {
+            console.log('ihdidjidjidjdijdij')
+            console.log(event)
+        })
+    })
+}
+
 
 createConnection().then(async connection => {
 
     // create express app
     const app = express();
-    app.use(bodyParser.json());
 
+    app.use(bodyParser.json());
+    const server = http.createServer(app);
+    const io = new Server(server)
+    setupWsConnect(io)
     // register express routes from defined application routes
     Routes.forEach(route => {
         (app as any)[route.method](route.route, (req: Request, res: Response, next: Function) => {
@@ -29,20 +48,9 @@ createConnection().then(async connection => {
     // ...
 
     // start express server
-    app.listen(3000);
+    server.listen(process.env.PORT);
 
     // insert new users for test
-    await connection.manager.save(connection.manager.create(User, {
-        firstName: "Timber",
-        lastName: "Saw",
-        age: 27
-    }));
-    await connection.manager.save(connection.manager.create(User, {
-        firstName: "Phantom",
-        lastName: "Assassin",
-        age: 24
-    }));
-
-    console.log("Express server has started on port 3000. Open http://localhost:3000/users to see results");
+    console.log(`Server started on ${process.env.PORT}`);
 
 }).catch(error => console.log(error));

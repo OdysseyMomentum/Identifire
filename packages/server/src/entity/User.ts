@@ -1,18 +1,21 @@
 import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import { H3Index } from "h3-js";
 
 @Entity()
 export class User {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number
 
-    @Column()
-    firstName: string;
+  @Column()
+  notificationId: number
 
-    @Column()
-    lastName: string;
+  @Column({ nullable: true })
+  locationIndex?: H3Index
 
-    @Column()
-    age: number;
+  @Column({ nullable: true })
+  latitude?: number
 
+  @Column({ nullable: true })
+  longitude?: number
 }
