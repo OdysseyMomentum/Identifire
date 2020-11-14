@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import { RestAPI } from 'common-types';
 
-import { Box, Text, Button, Spinner } from '@chakra-ui/react';
+import { Box, Text, Button, Spinner, Textarea } from '@chakra-ui/react';
 
 import { Panel } from '../../components';
 
@@ -49,8 +49,6 @@ export const ActiveEvent: React.FunctionComponent = () => {
     }
   }, [event]);
 
-  console.log(event);
-
   return (
     <>
       {event && (
@@ -60,6 +58,9 @@ export const ActiveEvent: React.FunctionComponent = () => {
       )}
       <Panel>
         <Box padding="1rem" borderRadius="1rem" backgroundColor="white">
+          <Box marginBottom="1.2rem">
+            <Textarea style={{ height: '100px' }} />
+          </Box>
           {!event && <Spinner size="lg" />}
           {event && (
             <Button onClick={() => history.push('/')}>End emergency</Button>
