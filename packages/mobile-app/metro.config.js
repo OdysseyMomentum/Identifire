@@ -42,6 +42,9 @@ function getConfig(appDir, options = {}) {
     '@react-native-community/masked-view',
     'react-native-dotenv',
     '@react-native-community/async-storage',
+    'expo-task-manager',
+    'react-native-gifted-chat',
+    'react-native-lightbox',
   ].reduce(
     (prev, curr) => ({
       ...prev,

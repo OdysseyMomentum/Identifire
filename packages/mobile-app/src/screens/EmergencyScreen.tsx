@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
+import { IMessage } from 'react-native-gifted-chat';
 
 import { GOOGLE_MAPS_API_KEY } from '@env';
 import { EmergencyNotification } from 'common-types';
@@ -12,7 +13,12 @@ import {
   watchLocation,
 } from '../util/location';
 import BottomSheet from '../components/BottomSheet';
-import { acceptEvent, getSocket } from '../util/websocket';
+import {
+  acceptEvent,
+  getSocket,
+  sendChat,
+  updateLocation,
+} from '../util/websocket';
 
 interface DirectionsInfo {
   distance: number;
@@ -29,6 +35,17 @@ export default ({
   userId: number;
 }) => {
   const [socket, setSocket] = useState<SocketIOClient.Socket | undefined>();
+  const [messages, setMessages] = useState<IMessage[]>([
+    {
+      text: 'hello',
+      createdAt: new Date(),
+      _id: Math.random(),
+      user: {
+        _id: userId,
+      },
+    },
+  ]);
+  const [isAccepted, setIsAccepted] = useState(false);
   const [directionsInfo, setDirectionsInfo] = useState<DirectionsInfo>({
     distance: 0,
     duration: 0,
@@ -55,6 +72,7 @@ export default ({
 
   const onAccept = () => {
     async function accept() {
+      console.log('accepting event');
       const socket = await getSocket();
       setSocket(socket);
 
@@ -68,11 +86,31 @@ export default ({
         userId,
       });
 
-      setLocationWatcher(await watchLocation(() => {}));
+      setIsAccepted(true);
+
+      setLocationWatcher(
+        await watchLocation((location) => {
+          console.log('got location', location);
+          updateLocation(socket, {
+            userId,
+            location: {
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+            },
+          });
+        })
+      );
     }
 
     accept();
   };
+
+  function onSend(messages: IMessage[]) {
+    console.log('sending chat message', messages[0].text);
+    sendChat(socket!, {
+      content: messages[0].text,
+    });
+  }
 
   return (
     <View style={styles.container}>
@@ -82,6 +120,10 @@ export default ({
         duration={directionsInfo.duration}
         title={emergencyNotification.title}
         address={emergencyNotification.address}
+        isAccepted={isAccepted}
+        userId={userId}
+        onSend={onSend}
+        messages={messages}
       />
       <MapView
         style={styles.mapStyle}

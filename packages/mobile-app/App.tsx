@@ -2,12 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Subscription } from '@unimodules/core';
 import AsyncStorage from '@react-native-community/async-storage';
-
 import * as Notifications from 'expo-notifications';
-import EmergencyScreen from './src/screens/EmergencyScreen';
+
 import { EmergencyNotification } from 'common-types';
+import EmergencyScreen from './src/screens/EmergencyScreen';
 import { getLocation, LocationType } from './src/util/location';
-import { onboard } from './src/util/api';
+import { onboard, updateUserLocation } from './src/util/api';
 import { registerForPushNotificationsAsync } from './src/util/notification';
 
 function Home() {
@@ -35,6 +35,17 @@ export default () => {
       });
     });
   }, []);
+
+  useEffect(() => {
+    if (userId && location) {
+      console.log('sending my location to ze zerver');
+      updateUserLocation({
+        userId,
+        latitude: location.latitude,
+        longitude: location.longitude,
+      });
+    }
+  }, [userId, location]);
 
   useEffect(() => {
     async function onboardUser() {

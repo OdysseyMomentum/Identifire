@@ -3,6 +3,8 @@ import { View, Text, StyleSheet } from 'react-native';
 // @ts-ignore
 import { Block, Button } from 'galio-framework';
 import BottomSheetBase from 'reanimated-bottom-sheet';
+import Chat from './Chat';
+import { IMessage } from 'react-native-gifted-chat';
 
 export default ({
   title,
@@ -11,6 +13,10 @@ export default ({
   duration,
   address,
   onAccept,
+  isAccepted,
+  userId,
+  onSend,
+  messages,
 }: {
   title: string;
   //   eventType: string;
@@ -18,6 +24,10 @@ export default ({
   duration: number;
   address: string;
   onAccept: () => void;
+  isAccepted: boolean;
+  userId: number;
+  onSend: (messages: IMessage[]) => void;
+  messages: IMessage[];
 }) => {
   const bottomSheet = useRef(null);
   const durationText = `Travel time: ${Math.ceil(duration)} minutes`;
@@ -30,14 +40,19 @@ export default ({
         {/* <Text style={styles.panelSubtitle}>{eventType}</Text> */}
         <Text style={styles.panelSubtitle}>{distanceText}</Text>
         <Text style={styles.panelSubtitle}>{durationText}</Text>
-        <Text style={styles.panelSubtitle}>{address}</Text>
+        <Text style={styles.panelSubtitle}>Address: {address}</Text>
       </Block>
-      <Block row>
-        <Button color="danger">Decline</Button>
-        <Button color="success" onPress={onAccept}>
-          Accept
-        </Button>
-      </Block>
+      {!isAccepted && (
+        <Block row>
+          <Button color="danger">Decline</Button>
+          <Button color="success" onPress={onAccept}>
+            Accept
+          </Button>
+        </Block>
+      )}
+      {isAccepted && (
+        <Chat userId={userId} onSend={onSend} messages={messages} />
+      )}
     </View>
   );
 

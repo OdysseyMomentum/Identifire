@@ -32,7 +32,10 @@
       "**/react-native-safe-area-context",
       "**/@react-native-community/masked-view",
       "**/react-native-dotenv",
-      "**/@react-native-community/async-storage"
+      "**/@react-native-community/async-storage",
+      "**/expo-task-manager",
+      "**/react-native-gifted-chat",
+      "**/react-native-lightbox"
     ]
   },
   "devDependencies": {

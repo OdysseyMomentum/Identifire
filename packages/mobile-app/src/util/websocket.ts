@@ -15,6 +15,7 @@ export async function acceptEvent(
   socket: SocketIOClient.Socket,
   payload: WebSocketType.AcceptEvent['payload']
 ) {
+  console.log('sending acceptEvent websocket');
   const action: WebSocketType.AcceptEvent = {
     type: 'mobile->server/accept-event',
     payload,
@@ -25,10 +26,11 @@ export async function acceptEvent(
 
 export async function updateLocation(
   socket: SocketIOClient.Socket,
-  payload: WebSocketType.UpdateLocation['payload']
+  payload: WebSocketType.MobileUpdateLocation['payload']
 ) {
-  const action: WebSocketType.UpdateLocation = {
-    type: 'server->dispatch/participant-location-update',
+  console.log('sending updateLocation websocket');
+  const action: WebSocketType.MobileUpdateLocation = {
+    type: 'mobile->dispatch/participant-location-update',
     payload,
   };
 
@@ -39,6 +41,7 @@ export async function sendChat(
   socket: SocketIOClient.Socket,
   payload: WebSocketType.Chat['payload']
 ) {
+  console.log('sending sendChat websocket');
   const action: WebSocketType.Chat = {
     type: 'mobile<->dispatch/chat',
     payload,

@@ -1,14 +1,18 @@
 import * as Location from 'expo-location';
 
-export async function getLocation({
-  accuracy = Location.LocationAccuracy.Low,
-}: {
-  accuracy: Location.LocationAccuracy;
-}) {
+export async function startBackgroundLocationTracking() {
+  if (!(await Location.hasStartedLocationUpdatesAsync('hexagon-tracking'))) {
+    await Location.startLocationUpdatesAsync('hexagon-tracking', {
+      accuracy: Location.LocationAccuracy.Balanced,
+    });
+  }
+}
+
+export async function getLocation() {
   await Location.requestPermissionsAsync();
 
   let location = await Location.getCurrentPositionAsync({
-    accuracy,
+    accuracy: Location.LocationAccuracy.Low,
   });
 
   return location;

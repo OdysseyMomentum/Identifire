@@ -4,7 +4,7 @@ import { HTTP_URL } from '@env';
 import { RestAPI } from 'common-types';
 import { LocationType } from './location';
 
-export async function post(path: string, data: any) {
+export async function post(path: string, data: any, responseRequested = true) {
   const url = `${HTTP_URL}${path}`;
   console.log('sending request', url, data);
   const response = await fetch(`${HTTP_URL}${path}`, {
@@ -15,7 +15,9 @@ export async function post(path: string, data: any) {
     },
   });
 
-  return response.json();
+  if (responseRequested) {
+    return response.json();
+  }
 }
 
 export async function onboard(notificationId: string): Promise<number> {
@@ -39,10 +41,14 @@ export async function updateUserLocation({
   latitude,
   longitude,
   userId,
-}: LocationType & { userId: string }) {
-  const h3Index = geoToH3(latitude, longitude, 7);
-  post('/user/location', {
-    locationIndex: h3Index,
-    userId,
-  });
+}: LocationType & { userId: number }) {
+  const h3Index = geoToH3(latitude, longitude, 5);
+  await post(
+    '/user/location',
+    {
+      locationIndex: h3Index,
+      userId,
+    },
+    false
+  );
 }
