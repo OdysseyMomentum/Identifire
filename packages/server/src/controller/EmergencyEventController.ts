@@ -5,6 +5,7 @@ import { geoToH3, kRing } from 'h3-js'
 import { User } from "../entity/User";
 import { EmergencyEventType } from "../entity/EmergencyEventType";
 import { NotificationService } from "../NotificationService";
+import { RestAPI } from 'common-types'
 
 export class EmergencyEventController {
     private emergencyEventRepository = getRepository(EmergencyEvent);
@@ -42,7 +43,15 @@ export class EmergencyEventController {
             where: searchArray
         })
         await this.notificationService.sendNotification(emergency, nearbyUsers)
-        return 'OK'
+        const response: RestAPI.Dispatch.CreateEventResponse = {
+            address: emergency.address,
+            latitude: emergency.latitude,
+            longitude: emergency.longitude,
+            nrOfParticipants: 2,
+            type: 'fire',
+            id: emergency.id
+        }
+        return response
     }
 
     async remove(request: Request, response: Response, next: NextFunction) {
