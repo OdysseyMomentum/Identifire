@@ -61,6 +61,7 @@ export const CreateEvent: React.FunctionComponent = () => {
             address: HARDCODED_EMERGENCY_ADDRESS,
             type: 'Fire' as RestAPI.Dispatch.EventType,
             nrOfParticipants: 2,
+            credentialType: 'BHV' as RestAPI.Dispatch.CredentialType,
           }}
           onSubmit={async (values) => {
             setIsCreatingEvent(true);
@@ -103,6 +104,21 @@ export const CreateEvent: React.FunctionComponent = () => {
                           { label: 'Fire', value: 'Fire' },
                           { label: 'Cardiac Arrest', value: 'Cardiac Arrest' },
                           { label: 'Car Crash', value: 'Car Crash' },
+                        ]}
+                      />
+                    )}
+                  </Field>
+                </Box>
+                <Box marginBottom="1.2rem">
+                  <Field name="credentialType">
+                    {({ field }) => (
+                      <Dropdown
+                        label="Credential Type"
+                        value={field.value}
+                        onChange={(v) => setFieldValue('credentialType', v)}
+                        options={[
+                          { label: 'BHV', value: 'BHV' },
+                          { label: 'CPR', value: 'CPR' },
                         ]}
                       />
                     )}

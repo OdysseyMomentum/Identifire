@@ -1,4 +1,4 @@
 export interface Credential {
-  type: string;
+  type: 'BHV' | 'CPR';
   name: string;
 }

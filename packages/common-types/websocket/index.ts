@@ -1,4 +1,5 @@
 import { Credential } from '..';
+import { RestAPI } from '../rest-api';
 
 export namespace WebSocket {
   export interface AcceptEvent {
@@ -15,6 +16,8 @@ export namespace WebSocket {
     payload: {
       users: Array<{
         id: number;
+        name: string;
+        credentialType: RestAPI.Dispatch.CredentialType;
         location: {
           latitude: number;
           longitude: number;
@@ -45,7 +48,7 @@ export namespace WebSocket {
     type: 'mobile<->dispatch/chat';
     payload: {
       name: string;
-      userId: number;
+      userId?: number;
       content: string;
       eventId: number;
       avatarUrl?: string;

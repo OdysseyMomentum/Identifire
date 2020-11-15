@@ -4,7 +4,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { RestAPI, WebSocket } from 'common-types';
 import { connect, Socket } from 'socket.io-client';
-import { Box, Text, Button, Spinner, Textarea } from '@chakra-ui/react';
+import { Box, Text, Button, Spinner } from '@chakra-ui/react';
 import 'react-chatbox-component/dist/style.css';
 import { ChatBox } from 'react-chatbox-component';
 
@@ -64,7 +64,7 @@ export const ActiveEvent: React.FunctionComponent = () => {
     };
   }
 
-  const [messages, setMessages] = useState<any[]>([
+  const [messages, setMessages] = useState<Message[]>([
     {
       id: v4(),
       text: 'Hello, please stand by for instructions.',
@@ -159,7 +159,14 @@ export const ActiveEvent: React.FunctionComponent = () => {
             <Box marginBottom="1.2rem">
               <Box marginBottom="0.8rem">
                 <Text fontSize="1.2rem" fontWeight="500">
-                  User:
+                  User(s):{' '}
+                  {Array.from(
+                    new Set(
+                      messages
+                        .map((m) => m.sender.name)
+                        .filter((n) => n !== 'Dispatch')
+                    )
+                  ).join(', ')}
                 </Text>
               </Box>
               <ChatBox
@@ -183,7 +190,6 @@ export const ActiveEvent: React.FunctionComponent = () => {
                     type: 'mobile<->dispatch/chat',
                     payload: {
                       content: message.text,
-                      userId: 0,
                       eventId: event.id,
                       name: message.sender.name,
                       avatarUrl: message.sender.avatar,
@@ -205,6 +211,10 @@ export const ActiveEvent: React.FunctionComponent = () => {
                     };
                     socket.emit('message', endEventMessage);
                   }
+                  if (socket) {
+                    socket.close();
+                  }
+                  map.removeUserPins();
 
                   history.push('/');
                 }}

@@ -69,6 +69,13 @@ class MyMap {
     });
   }
 
+  removeUserPins() {
+    Object.keys(this.markers.users).forEach((id) => {
+      this.markers.users[id].remove();
+      delete this.markers.users[id];
+    });
+  }
+
   hasCurrentEventPin() {
     return !!this.markers.currentEvent;
   }
