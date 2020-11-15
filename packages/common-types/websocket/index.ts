@@ -44,7 +44,10 @@ export namespace WebSocket {
   export interface Chat {
     type: 'mobile<->dispatch/chat';
     payload: {
+      name: string;
+      userId: number;
       content: string;
+      eventId: number;
     };
   }
 
