@@ -142,6 +142,7 @@ function setupWsConnect(io: Server) {
               payload: {
                 users: event.users.map((u) => ({
                   id: u.id,
+                  credentialType: u.credentialTypes[0].name,
                   location: {
                     latitude: u.latitude,
                     longitude: u.longitude,

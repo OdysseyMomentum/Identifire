@@ -9,5 +9,5 @@ export class CredentialType {
   id: number;
 
   @Column()
-  name: string;
+  name: "BHV" | "CPR";
 }
