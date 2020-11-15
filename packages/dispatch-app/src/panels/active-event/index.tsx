@@ -40,6 +40,30 @@ export const ActiveEvent: React.FunctionComponent = () => {
 
   const [socket, setSocket] = useState<undefined | typeof Socket>();
 
+  interface Message {
+    id: string;
+    text: string;
+    sender: {
+      uid: string;
+      name: string;
+      avatar: string;
+    };
+  }
+
+  function chatToMessage(chat: WebSocket.Chat): Message {
+    return {
+      id: v4(),
+      text: chat.payload.content,
+      sender: {
+        name: chat.payload.name,
+        avatar:
+          chat.payload.avatarUrl ??
+          'https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png',
+        uid: String(chat.payload.userId),
+      },
+    };
+  }
+
   const [messages, setMessages] = useState<any[]>([
     {
       id: v4(),
@@ -78,17 +102,7 @@ export const ActiveEvent: React.FunctionComponent = () => {
           map.updateUserPins(m.payload.users);
           break;
         case 'mobile<->dispatch/chat':
-          setMessages((ms) =>
-            ms.concat({
-              id: v4(),
-              text: m.payload.content,
-              sender: {
-                name: 'User',
-                avatar:
-                  'https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png',
-              },
-            })
-          );
+          setMessages((ms) => ms.concat(chatToMessage(m)));
           break;
         default:
       }
@@ -154,18 +168,28 @@ export const ActiveEvent: React.FunctionComponent = () => {
                   uid: DISPATCH_USER_CHAT_ID,
                 }}
                 onSubmit={(m) => {
-                  setMessages((ms) =>
-                    ms.concat({
-                      id: v4(),
-                      text: m,
-                      sender: {
-                        name: 'Dispatch',
-                        uid: DISPATCH_USER_CHAT_ID,
-                        avatar:
-                          'https://image.freepik.com/free-vector/call-center-service-illustration_24877-52388.jpg',
-                      },
-                    })
-                  );
+                  const message = {
+                    id: v4(),
+                    text: m,
+                    sender: {
+                      name: 'Dispatch',
+                      uid: DISPATCH_USER_CHAT_ID,
+                      avatar:
+                        'https://image.freepik.com/free-vector/call-center-service-illustration_24877-52388.jpg',
+                    },
+                  };
+                  setMessages((ms) => ms.concat(message));
+                  const chat: WebSocket.Chat = {
+                    type: 'mobile<->dispatch/chat',
+                    payload: {
+                      content: message.text,
+                      userId: 0,
+                      eventId: event.id,
+                      name: message.sender.name,
+                      avatarUrl: message.sender.avatar,
+                    },
+                  };
+                  socket.send(chat);
                 }}
               />
             </Box>

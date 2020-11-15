@@ -48,14 +48,14 @@ export namespace WebSocket {
       userId: number;
       content: string;
       eventId: number;
-      avatarUrl: string;
+      avatarUrl?: string;
     };
   }
 
   export interface EndEmergency {
     type: 'dispatch->server/end-emergency-event';
     payload: {
-      eventId: string;
+      eventId: number;
     };
   }
 
