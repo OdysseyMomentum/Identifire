@@ -98,11 +98,25 @@ function setupWsConnect(io: Server) {
   });
 }
 
+async function seedDb() {
+  const credentialTypeRepo = getRepository(CredentialType);
+  const emergencyTypeRepo = getRepository(EmergencyEventType);
+
+  const credType = new CredentialType()
+  credType.name = 'CPR'
+
+  const emergencyType1 = new EmergencyEventType()
+  emergencyType1.code = 'HEART_ATTACK'
+  emergencyType1.title = 'YOU GEF HEART ATTACK YES?'
+  emergencyType1.credentialTypes.push(credType)
+  await emergencyTypeRepo.save(emergencyType1)
+}
+
 createConnection()
   .then(async (connection) => {
     // create express app
     const app = express();
-
+    
     app.use(cors({ origin: '*' }));
     app.use(bodyParser.json());
     const server = http.createServer(app);
