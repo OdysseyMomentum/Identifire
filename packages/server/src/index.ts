@@ -151,16 +151,36 @@ async function seedDb() {
   const credentialTypeRepo = getRepository(CredentialType);
   const emergencyTypeRepo = getRepository(EmergencyEventType);
 
-  const credType = new CredentialType();
-  credType.name = 'extinguagee';
+  // CPR
+  const cpr = new CredentialType();
+  cpr.name = 'CPR';
+  await credentialTypeRepo.save(cpr);
 
-  const emergencyType1 = new EmergencyEventType();
-  emergencyType1.code = 'fire';
-  emergencyType1.title = 'BURN BABY BABY BABY';
-  emergencyType1.credentialTypes = [];
-  emergencyType1.credentialTypes.push(credType);
-  await credentialTypeRepo.save(credType);
-  await emergencyTypeRepo.save(emergencyType1);
+  // BHV
+  const bhv = new CredentialType();
+  bhv.name = 'BHV';
+  await credentialTypeRepo.save(bhv);
+
+  // Fire
+  const fireEmergency = new EmergencyEventType();
+  fireEmergency.code = 'Fire';
+  fireEmergency.title = 'Fire';
+  fireEmergency.credentialTypes = [bhv, cpr];
+  await emergencyTypeRepo.save(fireEmergency);
+
+  // Heart Attack
+  const heartAttack = new EmergencyEventType();
+  heartAttack.code = 'Cardiac Arrest';
+  heartAttack.title = 'Cardiac Arrest';
+  heartAttack.credentialTypes = [cpr];
+  await emergencyTypeRepo.save(heartAttack);
+
+  // Car Crash
+  const carCrashEmergency = new EmergencyEventType();
+  carCrashEmergency.code = 'Car Crash';
+  carCrashEmergency.title = 'Car Crash';
+  carCrashEmergency.credentialTypes = [bhv, cpr];
+  await emergencyTypeRepo.save(carCrashEmergency);
 }
 
 createConnection()

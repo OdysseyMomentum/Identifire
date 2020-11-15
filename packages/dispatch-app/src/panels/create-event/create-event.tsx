@@ -13,7 +13,7 @@ import { useAppContext } from '../../app_context';
 
 const { useEffect, useState, useRef, useMemo } = React;
 
-const HARDCODED_EMERGENCY_ADDRESS = '80 biltstraat netherlands';
+const HARDCODED_EMERGENCY_ADDRESS = 'Biltstraat 80, Utrecht Netherlands';
 
 export const CreateEvent: React.FunctionComponent = () => {
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
@@ -59,7 +59,7 @@ export const CreateEvent: React.FunctionComponent = () => {
         <Formik
           initialValues={{
             address: HARDCODED_EMERGENCY_ADDRESS,
-            type: 'fire' as RestAPI.Dispatch.EventType,
+            type: 'Fire' as RestAPI.Dispatch.EventType,
             nrOfParticipants: 2,
           }}
           onSubmit={async (values) => {
@@ -100,8 +100,9 @@ export const CreateEvent: React.FunctionComponent = () => {
                         value={field.value}
                         onChange={(v) => setFieldValue('type', v)}
                         options={[
-                          { label: 'Fire', value: 'fire' },
-                          { label: 'Heart attack', value: 'heart-attack' },
+                          { label: 'Fire', value: 'Fire' },
+                          { label: 'Cardia Arrest', value: 'Cardia Arrest' },
+                          { label: 'Car Crash', value: 'Car Crash' },
                         ]}
                       />
                     )}

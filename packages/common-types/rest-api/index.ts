@@ -14,13 +14,15 @@ export namespace RestAPI {
   }
 
   export namespace Dispatch {
-    export type EventType = 'fire' | 'heart-attack';
+    export type EventType = 'Fire' | 'Heart Attack' | 'Cardiac Arrest';
+    export type CredentialType = 'BHV' | 'CPR';
 
     export interface CreateEventRequest {
       latitude: number;
       longitude: number;
       type: EventType;
       nrOfParticipants: number;
+      credentialType: CredentialType;
     }
     export interface CreateEventResponse {
       address: string;
