@@ -4,10 +4,10 @@ import { connect, Socket } from 'socket.io-client';
 
 import { WebSocket as WebSocketType } from 'common-types';
 export async function getSocket() {
-  const socket = connect({
-    host: WS_URL,
+  const socket = connect(WS_URL);
+  await new Promise((res) => {
+    socket.on('connect', res);
   });
-
   return socket;
 }
 

@@ -82,7 +82,7 @@ export default ({
 
       await acceptEvent(socket, {
         credentials: [],
-        eventId: emergencyNotification.id,
+        eventId: emergencyNotification.eventId,
         userId,
       });
 

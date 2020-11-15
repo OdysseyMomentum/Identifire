@@ -37,14 +37,21 @@ class MyMap {
       location: { latitude: number; longitude: number };
     }>
   ) {
+    console.log('updating user pins', users);
     const unseenUsers = { ...this.markers.users };
+    console.log('unseen users', unseenUsers);
     users.forEach((user) => {
+      console.log('handle setting pin for user with id', user.id);
       if (this.markers.users[user.id]) {
+        console.log('already has pin for user with id', user.id);
+
         this.markers.users[user.id].setLngLat({
           lat: user.location.latitude,
           lon: user.location.longitude,
         });
       } else {
+        console.log('do not have pin for user with id', user.id);
+
         this.markers.users[user.id] = new mapboxgl.Marker({
           color: 'blue',
         })
@@ -54,6 +61,7 @@ class MyMap {
       delete unseenUsers[user.id];
     });
 
+    console.log('pin set for all new locations, unseen remaining', unseenUsers);
     // Clean up users object and dangling pins
     Object.keys(unseenUsers).forEach((id) => {
       this.markers.users[(id as unknown) as number].remove();

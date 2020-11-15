@@ -51,14 +51,14 @@ export default () => {
     async function onboardUser() {
       const userId = await AsyncStorage.getItem('userId-2');
 
-      if (!userId) {
+      if (!userId || true) {
         const userId = await onboard(expoPushToken!);
         console.log('onboarding complete, got userId:', userId);
         await AsyncStorage.setItem('userId-2', String(userId));
         setUserId(userId);
       } else {
-        console.log('retrieved userId from storage:', userId);
-        setUserId(Number(userId));
+        // console.log('retrieved userId from storage:', userId);
+        // setUserId(Number(userId));
       }
     }
 

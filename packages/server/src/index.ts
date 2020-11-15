@@ -14,6 +14,7 @@ import { EmergencyEvent } from './entity/EmergencyEvent';
 import { eventNames } from 'process';
 import { CredentialType } from './entity/CredentialType';
 import { EmergencyEventType } from './entity/EmergencyEventType';
+import { geoToH3 } from 'h3-js';
 
 dotenv.config();
 
@@ -51,17 +52,28 @@ async function handleUserAcceptEvent(
   user.credentialTypes = credentialObjects;
   user.webSocketConnection = socket;
   let emergency = await emergencyEventRepo.findOne(action.payload.eventId);
-  const requiredCreds = emergency.emergencyType.credentialTypes.map(
-    (x) => x.name
+  console.log(
+    'handling user accept event. Got emergency',
+    emergency,
+    'and got user',
+    user
   );
-  const userCreds = action.payload.credentials.map((x) => x.type);
-  if (!validateUserCredentials(userCreds, requiredCreds)) {
-    console.error('User credentials are not sufficient, ignoring request');
-    return;
+  // TODO fix this
+  // const requiredCreds = emergency.emergencyType.credentialTypes.map(
+  //   (x) => x.name
+  // );
+  // const userCreds = action.payload.credentials.map((x) => x.type);
+  // if (!validateUserCredentials(userCreds, requiredCreds)) {
+  //   console.error('User credentials are not sufficient, ignoring request');
+  //   return;
+  // }
+  if (!emergency.users) {
+    emergency.users = [];
   }
-
   emergency.users.push(user);
   await emergencyEventRepo.save(emergency);
+  user.activeEmergencyEvent = emergency;
+  console.log('handling user accept after save', emergency, user);
   await userRepo.save(user);
 }
 
@@ -70,7 +82,8 @@ function setupWsConnect(io: Server) {
   let emergencyEventRepo = getRepository(EmergencyEvent);
   let credentialTypeRepo = getRepository(CredentialType);
   io.on('connection', (socket: Socket) => {
-    socket.on('msg', async (action: WebSocket.Action) => {
+    socket.on('message', async (action: WebSocket.Action) => {
+      console.log('Received websocket event', action);
       switch (action.type) {
         case 'mobile->server/accept-event':
           await handleUserAcceptEvent(
@@ -85,14 +98,48 @@ function setupWsConnect(io: Server) {
           const user = await userRepo.findOne(action.payload.userId);
           user.latitude = action.payload.location.latitude;
           user.longitude = action.payload.location.longitude;
+          user.locationIndex = geoToH3(
+            user.latitude,
+            user.longitude,
+            Number(process.env.H3_RESOLUTION)
+          );
           await userRepo.save(user);
           break;
         case 'dispatch->server/subscribe-to-event':
+          console.log('dispatch subscribing to event');
           setInterval(async () => {
+            let users = await userRepo.find({
+              where: {
+                activeEmergencyEvent: {
+                  id: action.payload.eventId,
+                },
+              },
+            });
+
             let event = await emergencyEventRepo.findOne(
               action.payload.eventId
             );
-            socket.emit('msg', [...event.users]);
+            console.log(
+              `sending event info to dispatch. ${users.length} can help`,
+              users,
+              'and found event',
+              event
+            );
+
+            const actionToSend: WebSocket.ServerUpdateLocation = {
+              type: 'server->dispatch/participant-location-update',
+              payload: {
+                users: event.users.map((u) => ({
+                  id: u.id,
+                  location: {
+                    latitude: u.latitude,
+                    longitude: u.longitude,
+                  },
+                })),
+              },
+            };
+
+            socket.emit('message', actionToSend);
           }, 5000);
           break;
       }
@@ -105,13 +152,14 @@ async function seedDb() {
   const emergencyTypeRepo = getRepository(EmergencyEventType);
 
   const credType = new CredentialType();
-  credType.name = 'CPR';
+  credType.name = 'extinguagee';
 
   const emergencyType1 = new EmergencyEventType();
   emergencyType1.code = 'fire';
   emergencyType1.title = 'BURN BABY BABY BABY';
   emergencyType1.credentialTypes = [];
   emergencyType1.credentialTypes.push(credType);
+  await credentialTypeRepo.save(credType);
   await emergencyTypeRepo.save(emergencyType1);
 }
 
@@ -150,7 +198,10 @@ createConnection()
 
     // setup express app here
     // ...
-    await seedDb();
+    if (process.argv[2] === '--seed') {
+      console.log('seeding db');
+      await seedDb();
+    }
 
     // start express server
     server.listen(process.env.PORT);

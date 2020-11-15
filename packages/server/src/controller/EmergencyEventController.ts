@@ -38,7 +38,7 @@ export class EmergencyEventController {
       Number(process.env.H3_RESOLUTION)
     );
     let indices = kRing(emergencyIndex, Number(process.env.H3_KRING_SIZE));
-
+    console.log(`Looking for indices`, indices);
     let searchArray = [];
 
     for (const index of indices) {
@@ -48,6 +48,8 @@ export class EmergencyEventController {
     const nearbyUsers = await this.userRepository.find({
       where: searchArray,
     });
+    console.log('Nearby users', nearbyUsers);
+
     await this.notificationService.sendNotification(emergency, nearbyUsers);
     const res: RestAPI.Dispatch.CreateEventResponse = {
       address: emergency.address,

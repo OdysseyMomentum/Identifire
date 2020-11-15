@@ -21,7 +21,8 @@ export async function getLocation() {
 export async function watchLocation(callback: Location.LocationCallback) {
   return Location.watchPositionAsync(
     {
-      accuracy: Location.LocationAccuracy.BestForNavigation,
+      accuracy: Location.LocationAccuracy.Highest,
+      distanceInterval: 2,
     },
     callback
   );

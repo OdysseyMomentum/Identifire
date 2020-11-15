@@ -41,7 +41,8 @@
       "**/@react-native-community/async-storage",
       "**/expo-task-manager",
       "**/react-native-gifted-chat",
-      "**/react-native-lightbox"
+      "**/react-native-lightbox",
+      "**/typeorm"
     ]
   },
   "devDependencies": {

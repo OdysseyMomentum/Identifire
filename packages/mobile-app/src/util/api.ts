@@ -4,11 +4,16 @@ import { HTTP_URL } from '@env';
 import { RestAPI } from 'common-types';
 import { LocationType } from './location';
 
-export async function post(path: string, data: any, responseRequested = true) {
+export async function post(
+  path: string,
+  data: any,
+  responseRequested = true,
+  method = 'POST'
+) {
   const url = `${HTTP_URL}${path}`;
   console.log('sending request', url, data);
   const response = await fetch(`${HTTP_URL}${path}`, {
-    method: 'POST',
+    method,
     body: JSON.stringify(data),
     headers: {
       'Content-Type': 'application/json',
@@ -49,6 +54,7 @@ export async function updateUserLocation({
       locationIndex: h3Index,
       userId,
     },
-    false
+    false,
+    'PUT'
   );
 }

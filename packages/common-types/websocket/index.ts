@@ -59,6 +59,7 @@ export namespace WebSocket {
     | AcceptEvent
     | SubscribeToEvent
     | MobileUpdateLocation
+    | ServerUpdateLocation
     | Chat
     | EndEmergency;
 }

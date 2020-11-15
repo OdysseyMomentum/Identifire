@@ -13,8 +13,6 @@ export class EmergencyEvent {
   @PrimaryGeneratedColumn()
   id: number;
 
-  
-
   @Column()
   latitude: number;
 
@@ -26,10 +24,11 @@ export class EmergencyEvent {
 
   @ManyToOne(
     () => EmergencyEventType,
-    (emergencyEventType) => emergencyEventType.emergencyEvents
+    (emergencyEventType) => emergencyEventType.emergencyEvents,
+    { eager: true }
   )
   emergencyType: EmergencyEventType;
 
-  @OneToMany(() => User, (user) => user.activeEmergencyEvent)
+  @OneToMany(() => User, (user) => user.activeEmergencyEvent, { eager: true })
   users: User[];
 }

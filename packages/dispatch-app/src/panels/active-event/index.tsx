@@ -67,8 +67,14 @@ export const ActiveEvent: React.FunctionComponent = () => {
     socket.emit('message', subscribeMessage);
 
     socket.on('message', (m: WebSocket.Action) => {
+      console.log('received message from server', m);
       switch (m.type) {
         case 'server->dispatch/participant-location-update':
+          console.log(
+            'received server->dispatch/participant-location-update',
+            m
+          );
+
           map.updateUserPins(m.payload.users);
           break;
         case 'mobile<->dispatch/chat':
@@ -91,6 +97,7 @@ export const ActiveEvent: React.FunctionComponent = () => {
 
   useEffect(() => {
     (async () => {
+      console.log('get event by id');
       setEvent(await api.dispatchEvent.get(id));
     })();
   }, [id]);
@@ -98,11 +105,21 @@ export const ActiveEvent: React.FunctionComponent = () => {
   useEffect(() => {
     if (event) {
       if (!map.hasCurrentEventPin()) {
+        console.log('setting event pin');
+
         map.setCurrentEventPin({ lat: event.latitude, lon: event.longitude });
       }
-      setupWs();
+      if (!socket || !socket.connected) {
+        console.log('setting up ws');
+        setupWs();
+      }
     }
-    return () => socket && socket.close();
+    return () => {
+      if (socket && socket.disconnected) {
+        console.log('closing socket');
+        socket.close();
+      }
+    };
   }, [event]);
 
   useEffect(() => {
