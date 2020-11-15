@@ -59,7 +59,9 @@ export const ActiveEvent: React.FunctionComponent = () => {
         avatar:
           chat.payload.avatarUrl ??
           'https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png',
-        uid: String(chat.payload.userId),
+        uid: chat.payload.userId
+          ? String(chat.payload.userId)
+          : DISPATCH_USER_CHAT_ID,
       },
     };
   }
@@ -78,7 +80,7 @@ export const ActiveEvent: React.FunctionComponent = () => {
   ]);
 
   const setupWs = async () => {
-    const socket = connect(`${wsUrl}/${event.id}`);
+    const socket = connect(wsUrl);
 
     await new Promise((res) => {
       socket.on('connect', res);
@@ -185,7 +187,6 @@ export const ActiveEvent: React.FunctionComponent = () => {
                         'https://image.freepik.com/free-vector/call-center-service-illustration_24877-52388.jpg',
                     },
                   };
-                  setMessages((ms) => ms.concat(message));
                   const chat: WebSocket.Chat = {
                     type: 'mobile<->dispatch/chat',
                     payload: {

@@ -155,8 +155,9 @@ function setupWsConnect(io: Server) {
           break;
         case 'mobile<->dispatch/chat':
           const e = await emergencyEventRepo.findOne(action.payload.eventId);
+          console.log('sending chat message for event', e.id);
           // io.allSockets()[event.socketId].emit('message', action.payload)
-          io.of(`/${e.id}`).emit('message', action.payload);
+          io.to(`/${e.id}`).emit('message', action);
           break;
       }
     });

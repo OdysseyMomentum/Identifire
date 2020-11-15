@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text, LogBox } from 'react-native';
 import { Subscription } from '@unimodules/core';
 import AsyncStorage from '@react-native-community/async-storage';
 import * as Notifications from 'expo-notifications';
@@ -10,8 +10,14 @@ import { getLocation, LocationType } from './src/util/location';
 import { onboard, updateUserLocation } from './src/util/api';
 import { registerForPushNotificationsAsync } from './src/util/notification';
 
+LogBox.ignoreAllLogs(true);
+
 function Home() {
-  return <View style={styles.container}></View>;
+  return (
+    <View style={styles.container}>
+      <Text style={{ fontSize: 30 }}>🔥</Text>
+    </View>
+  );
 }
 
 export default () => {

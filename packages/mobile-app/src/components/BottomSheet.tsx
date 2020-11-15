@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Block, Button } from 'galio-framework';
 import BottomSheetBase from 'reanimated-bottom-sheet';
 import Chat from './Chat';
-import { IMessage } from 'react-native-gifted-chat';
+import { WebSocket } from 'common-types';
 
 export default ({
   title,
@@ -26,8 +26,8 @@ export default ({
   onAccept: () => void;
   isAccepted: boolean;
   userId: number;
-  onSend: (messages: IMessage[]) => void;
-  messages: IMessage[];
+  onSend: (message: string) => void;
+  messages: WebSocket.Chat[];
 }) => {
   const bottomSheet = useRef(null);
   const durationText = `Travel time: ${Math.ceil(duration)} minutes`;
@@ -50,9 +50,7 @@ export default ({
           </Button>
         </Block>
       )}
-      {isAccepted && (
-        <Chat userId={userId} onSend={onSend} messages={messages} />
-      )}
+      {isAccepted && <Chat onSend={onSend} messages={messages} />}
     </View>
   );
 
@@ -67,18 +65,19 @@ export default ({
   return (
     <BottomSheetBase
       ref={bottomSheet}
-      snapPoints={[425]}
+      snapPoints={[700, 400]}
       renderContent={renderInner}
       renderHeader={renderHeader}
       enabledInnerScrolling={false}
       enabledBottomClamp={true}
+      initialSnap={1}
     />
   );
 };
 
 const styles = StyleSheet.create({
   panel: {
-    height: 400,
+    height: 700,
     padding: 10,
     backgroundColor: '#f7f5eee8',
   },

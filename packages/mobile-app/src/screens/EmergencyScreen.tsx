@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Dimensions,
+  KeyboardAvoidingView,
+} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
-import { IMessage } from 'react-native-gifted-chat';
 
 import { GOOGLE_MAPS_API_KEY } from '@env';
-import { EmergencyNotification } from 'common-types';
+import { EmergencyNotification, WebSocket } from 'common-types';
 import {
   LATITUDE_DELTA,
   LocationType,
@@ -34,17 +38,23 @@ export default ({
   currentLocation: LocationType;
   userId: number;
 }) => {
+  const names = [
+    'Ana',
+    'Karim',
+    'Timo',
+    'Nadia',
+    'Jean Louis',
+    'Peter',
+    'Rutger',
+    'Nick',
+    'Adam',
+  ];
+
+  const [name, setName] = useState(
+    names[Math.floor(Math.random() * names.length)]
+  );
   const [socket, setSocket] = useState<SocketIOClient.Socket | undefined>();
-  const [messages, setMessages] = useState<IMessage[]>([
-    {
-      text: 'hello',
-      createdAt: new Date(),
-      _id: Math.random(),
-      user: {
-        _id: userId,
-      },
-    },
-  ]);
+  const [messages, setMessages] = useState<WebSocket.Chat[]>([]);
   const [isAccepted, setIsAccepted] = useState(false);
   const [directionsInfo, setDirectionsInfo] = useState<DirectionsInfo>({
     distance: 0,
@@ -77,7 +87,9 @@ export default ({
       setSocket(socket);
 
       socket.on('message', (event: any) => {
-        console.log('message', event);
+        if (event.type === 'mobile<->dispatch/chat') {
+          setMessages((ms) => [...ms, event]);
+        }
       });
 
       await acceptEvent(socket, {
@@ -105,11 +117,19 @@ export default ({
     accept();
   };
 
-  function onSend(messages: IMessage[]) {
-    console.log('sending chat message', messages[0].text);
-    sendChat(socket!, {
-      content: messages[0].text,
-    });
+  function onSend(message: string) {
+    console.log('sending chat message', message);
+    const chatMessage: WebSocket.Chat = {
+      type: 'mobile<->dispatch/chat',
+      payload: {
+        content: message,
+        eventId: emergencyNotification.eventId,
+        name,
+        userId,
+      },
+    };
+    // setMessages((ms) => [...ms, chatMessage]);
+    sendChat(socket!, chatMessage.payload);
   }
 
   return (
