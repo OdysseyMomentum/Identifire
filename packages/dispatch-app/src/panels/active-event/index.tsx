@@ -181,6 +181,7 @@ export const ActiveEvent: React.FunctionComponent = () => {
                     };
                     socket.emit('message', endEventMessage);
                   }
+
                   history.push('/');
                 }}
               >

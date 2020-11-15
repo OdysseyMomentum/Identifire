@@ -48,6 +48,7 @@ export namespace WebSocket {
       userId: number;
       content: string;
       eventId: number;
+      avatarUrl: string;
     };
   }
 

@@ -34,7 +34,7 @@ export namespace RestAPI {
     }
 
     export interface GetEventResponse {
-      id: string;
+      id: number;
       latitude: number;
       longitude: number;
       address: string;
