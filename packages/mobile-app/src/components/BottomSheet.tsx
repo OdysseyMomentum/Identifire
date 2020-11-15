@@ -65,7 +65,7 @@ export default ({
   return (
     <BottomSheetBase
       ref={bottomSheet}
-      snapPoints={[600, 320]}
+      snapPoints={[800, 400]}
       renderContent={renderInner}
       renderHeader={renderHeader}
       enabledInnerScrolling={false}
