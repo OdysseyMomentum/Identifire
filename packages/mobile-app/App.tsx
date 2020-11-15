@@ -49,12 +49,12 @@ export default () => {
 
   useEffect(() => {
     async function onboardUser() {
-      const userId = await AsyncStorage.getItem('userId');
+      const userId = await AsyncStorage.getItem('userId-2');
 
       if (!userId) {
         const userId = await onboard(expoPushToken!);
         console.log('onboarding complete, got userId:', userId);
-        await AsyncStorage.setItem('userId', String(userId));
+        await AsyncStorage.setItem('userId-2', String(userId));
         setUserId(userId);
       } else {
         console.log('retrieved userId from storage:', userId);
