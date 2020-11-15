@@ -101,7 +101,7 @@ export const CreateEvent: React.FunctionComponent = () => {
                         onChange={(v) => setFieldValue('type', v)}
                         options={[
                           { label: 'Fire', value: 'Fire' },
-                          { label: 'Cardia Arrest', value: 'Cardia Arrest' },
+                          { label: 'Cardiac Arrest', value: 'Cardiac Arrest' },
                           { label: 'Car Crash', value: 'Car Crash' },
                         ]}
                       />
