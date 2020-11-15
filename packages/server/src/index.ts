@@ -110,6 +110,7 @@ async function seedDb() {
   const emergencyType1 = new EmergencyEventType();
   emergencyType1.code = 'fire';
   emergencyType1.title = 'BURN BABY BABY BABY';
+  emergencyType1.credentialTypes = [];
   emergencyType1.credentialTypes.push(credType);
   await emergencyTypeRepo.save(emergencyType1);
 }
