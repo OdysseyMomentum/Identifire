@@ -56,7 +56,7 @@ export class EmergencyEventController {
       latitude: emergency.latitude,
       longitude: emergency.longitude,
       nrOfParticipants: 2,
-      type: 'fire',
+      type: request.body.type,
       id: emergency.id,
     };
     return res;
