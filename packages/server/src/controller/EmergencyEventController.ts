@@ -26,7 +26,7 @@ export class EmergencyEventController {
         emergency.latitude = request.body.latitude
         emergency.longitude = request.body.longitude
         emergency.address = request.body.address
-        emergency.emergencyType = await this.emergencyTypeRepository.findOne({where: [{code: request.body.emergencyCode}]})
+        emergency.emergencyType = await this.emergencyTypeRepository.findOne({where: [{code: request.body.type}]})
         await this.emergencyEventRepository.save(emergency)
         
         const emergencyIndex = geoToH3(emergency.latitude, emergency.longitude, Number(process.env.H3_RESOLUTION))
@@ -42,6 +42,7 @@ export class EmergencyEventController {
             where: searchArray
         })
         await this.notificationService.sendNotification(emergency, nearbyUsers)
+        return 'OK'
     }
 
     async remove(request: Request, response: Response, next: NextFunction) {

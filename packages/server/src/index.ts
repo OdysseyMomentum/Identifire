@@ -107,12 +107,11 @@ async function seedDb() {
   const credType = new CredentialType();
   credType.name = 'CPR';
 
-  const emergencyType1 = new EmergencyEventType();
-  emergencyType1.code = 'HEART_ATTACK';
-  emergencyType1.title = 'YOU GEF HEART ATTACK YES?';
-  emergencyType1.credentialTypes = [];
-  emergencyType1.credentialTypes.push(credType);
-  await emergencyTypeRepo.save(emergencyType1);
+  const emergencyType1 = new EmergencyEventType()
+  emergencyType1.code = 'fire'
+  emergencyType1.title = 'BURN BABY BABY BABY'
+  emergencyType1.credentialTypes.push(credType)
+  await emergencyTypeRepo.save(emergencyType1)
 }
 
 createConnection()
@@ -147,7 +146,7 @@ createConnection()
         }
       );
     });
-
+    
     // setup express app here
     // ...
 
