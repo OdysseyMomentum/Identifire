@@ -16,7 +16,6 @@ export namespace WebSocket {
     payload: {
       users: Array<{
         id: number;
-        name: string;
         credentialType: RestAPI.Dispatch.CredentialType;
         location: {
           latitude: number;
