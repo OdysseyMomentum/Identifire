@@ -1,20 +1,12 @@
 import * as React from 'react';
-
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-const { useState } = React;
-
 import { map } from './services/map';
-
 import { MAP_Z_INDEX, CONTROLS_Z_INDEX } from './constants';
-
 import { Overlay } from './components';
-
 import { CreateEvent, ActiveEvent } from './panels';
 
-import { useAppContext } from './app_context';
-
-const { useRef, useEffect } = React;
+const { useRef, useEffect, useState } = React;
 
 mapboxgl.accessToken = process.env.MAPBOX_GL_KEY;
 
@@ -22,7 +14,6 @@ export const App: React.FunctionComponent = () => {
   const mapBoxContainerRef = useRef<HTMLDivElement | undefined>();
 
   const [mapMounted, setMapMounted] = useState(false);
-  const a = useAppContext();
 
   useEffect(() => {
     map.setMap(
@@ -46,7 +37,6 @@ export const App: React.FunctionComponent = () => {
             <Route path="/">{mapMounted && <CreateEvent />}</Route>
           </Switch>
         </BrowserRouter>
-        {/* {mapMounted && <CreateEvent />} */}
       </Overlay>
     </div>
   );

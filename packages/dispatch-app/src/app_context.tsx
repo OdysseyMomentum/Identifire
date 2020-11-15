@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-const { createContext, useContext, useState } = React;
-
 import { createAPI } from './lib/api';
+
+const { createContext, useContext } = React;
 
 interface Value {
   api: ReturnType<typeof createAPI>;

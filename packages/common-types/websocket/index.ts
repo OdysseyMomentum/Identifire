@@ -34,5 +34,18 @@ export namespace WebSocket {
       content: string;
     };
   }
-  export type Action = AcceptEvent | UpdateLocation | SubscribeToEvent | Chat;
+
+  export interface EndEmergency {
+    type: 'dispatch->server/end-emergency-event';
+    payload: {
+      eventId: string;
+    };
+  }
+
+  export type Action =
+    | AcceptEvent
+    | UpdateLocation
+    | SubscribeToEvent
+    | Chat
+    | EndEmergency;
 }

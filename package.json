@@ -7,6 +7,12 @@
       "packages/*"
     ],
     "nohoist": [
+      "**/react",
+      "**/react/**",
+      "**/react-dom",
+      "**/react-dom/**",
+      "**/styled-components",
+      "**/styled-components/**",
       "**/react-native",
       "**/react-native/**",
       "**/expo",
