@@ -29,44 +29,40 @@ function validateUserCredentials(
 }
 
 async function handleUserAcceptEvent(
-  action: WebSocket.AcceptEvent, 
-  userRepo: Repository<User>, 
-  emergencyEventRepo: Repository<EmergencyEvent>, 
-  credentialTypeRepo: Repository<CredentialType>, 
+  action: WebSocket.AcceptEvent,
+  userRepo: Repository<User>,
+  emergencyEventRepo: Repository<EmergencyEvent>,
+  credentialTypeRepo: Repository<CredentialType>,
   socket: Socket
-  ) {
+) {
   let user = await userRepo.findOne(action.payload.userId);
 
-  let searchCriteria = []
+  let searchCriteria = [];
 
   for (const c of action.payload.credentials) {
     searchCriteria.push({
-      name: c
-    })
+      name: c,
+    });
   }
   const credentialObjects = await credentialTypeRepo.find({
-    where: searchCriteria
-  })
+    where: searchCriteria,
+  });
 
-  user.credentialTypes = credentialObjects
+  user.credentialTypes = credentialObjects;
   user.webSocketConnection = socket;
-  let emergency = await emergencyEventRepo.findOne(
-    action.payload.eventId
-  );
+  let emergency = await emergencyEventRepo.findOne(action.payload.eventId);
   const requiredCreds = emergency.emergencyType.credentialTypes.map(
     (x) => x.name
   );
   const userCreds = action.payload.credentials.map((x) => x.type);
   if (!validateUserCredentials(userCreds, requiredCreds)) {
-    console.error(
-      'User credentials are not sufficient, ignoring request'
-    );
+    console.error('User credentials are not sufficient, ignoring request');
     return;
   }
 
   emergency.users.push(user);
   await emergencyEventRepo.save(emergency);
-  await userRepo.save(user)
+  await userRepo.save(user);
 }
 
 function setupWsConnect(io: Server) {
@@ -77,21 +73,27 @@ function setupWsConnect(io: Server) {
     socket.on('msg', async (action: WebSocket.Action) => {
       switch (action.type) {
         case 'mobile->server/accept-event':
-          await handleUserAcceptEvent(action, userRepo, emergencyEventRepo, credentialTypeRepo, socket)
+          await handleUserAcceptEvent(
+            action,
+            userRepo,
+            emergencyEventRepo,
+            credentialTypeRepo,
+            socket
+          );
           break;
         case 'mobile->dispatch/participant-location-update':
-          const user = await userRepo.findOne(action.payload.userId)
-          user.latitude = action.payload.location.latitude
-          user.longitude = action.payload.location.longitude
-          await userRepo.save(user)
+          const user = await userRepo.findOne(action.payload.userId);
+          user.latitude = action.payload.location.latitude;
+          user.longitude = action.payload.location.longitude;
+          await userRepo.save(user);
           break;
         case 'dispatch->server/subscribe-to-event':
           setInterval(async () => {
-            let event = await emergencyEventRepo.findOne(action.payload.eventId)
-            socket.emit('msg', [
-              ...event.users
-            ])
-          }, 5000)
+            let event = await emergencyEventRepo.findOne(
+              action.payload.eventId
+            );
+            socket.emit('msg', [...event.users]);
+          }, 5000);
           break;
       }
     });
@@ -102,21 +104,22 @@ async function seedDb() {
   const credentialTypeRepo = getRepository(CredentialType);
   const emergencyTypeRepo = getRepository(EmergencyEventType);
 
-  const credType = new CredentialType()
-  credType.name = 'CPR'
+  const credType = new CredentialType();
+  credType.name = 'CPR';
 
-  const emergencyType1 = new EmergencyEventType()
-  emergencyType1.code = 'HEART_ATTACK'
-  emergencyType1.title = 'YOU GEF HEART ATTACK YES?'
-  emergencyType1.credentialTypes.push(credType)
-  await emergencyTypeRepo.save(emergencyType1)
+  const emergencyType1 = new EmergencyEventType();
+  emergencyType1.code = 'HEART_ATTACK';
+  emergencyType1.title = 'YOU GEF HEART ATTACK YES?';
+  emergencyType1.credentialTypes = [];
+  emergencyType1.credentialTypes.push(credType);
+  await emergencyTypeRepo.save(emergencyType1);
 }
 
 createConnection()
   .then(async (connection) => {
     // create express app
     const app = express();
-    
+
     app.use(cors({ origin: '*' }));
     app.use(bodyParser.json());
     const server = http.createServer(app);
