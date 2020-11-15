@@ -8,7 +8,7 @@ import { Request, Response } from 'express';
 import { Routes } from './routes';
 import * as http from 'http';
 import { Server, Socket } from 'socket.io';
-import { WebSocket } from 'common-types';
+import { RestAPI, WebSocket } from 'common-types';
 import { User } from './entity/User';
 import { EmergencyEvent } from './entity/EmergencyEvent';
 import { eventNames } from 'process';
@@ -43,7 +43,7 @@ async function handleUserAcceptEvent(
 
   for (const c of action.payload.credentials) {
     searchCriteria.push({
-      name: c,
+      name: c.type,
     });
   }
   const credentialObjects = await credentialTypeRepo.find({
@@ -58,11 +58,11 @@ async function handleUserAcceptEvent(
     emergency,
     'and got user',
     user
-  )
-  socket.join(`/${emergency.id}`)
-  const requiredCreds = emergency.emergencyType.credentialTypes.map(
-    (x) => x.name
   );
+  socket.join(`/${emergency.id}`);
+  // const requiredCreds = emergency.emergencyType.credentialTypes.map(
+  //   (x) => x.name
+  // );
   // TODO fix this
   // const requiredCreds = emergency.emergencyType.credentialTypes.map(
   //   (x) => x.name
@@ -101,6 +101,7 @@ function setupWsConnect(io: Server) {
           break;
         case 'mobile->dispatch/participant-location-update':
           const user = await userRepo.findOne(action.payload.userId);
+          console.log('action.payload', action.payload);
           user.latitude = action.payload.location.latitude;
           user.longitude = action.payload.location.longitude;
           user.locationIndex = geoToH3(
@@ -112,10 +113,8 @@ function setupWsConnect(io: Server) {
           break;
         case 'dispatch->server/subscribe-to-event':
           console.log('dispatch subscribing to event');
-          let event = await emergencyEventRepo.findOne(
-            action.payload.eventId
-          );
-          socket.join(`/${event.id}`)
+          let event = await emergencyEventRepo.findOne(action.payload.eventId);
+          socket.join(`/${event.id}`);
           // event.socketId = socket.id
           // await emergencyEventRepo.save(event)
           setInterval(async () => {
@@ -142,7 +141,7 @@ function setupWsConnect(io: Server) {
               payload: {
                 users: event.users.map((u) => ({
                   id: u.id,
-                  credentialType: u.credentialTypes[0].name,
+                  credentialType: 'BHV', // u.credentialTypes[0].name,
                   location: {
                     latitude: u.latitude,
                     longitude: u.longitude,
@@ -155,9 +154,9 @@ function setupWsConnect(io: Server) {
           }, 5000);
           break;
         case 'mobile<->dispatch/chat':
-          const e = await emergencyEventRepo.findOne(action.payload.eventId)
+          const e = await emergencyEventRepo.findOne(action.payload.eventId);
           // io.allSockets()[event.socketId].emit('message', action.payload)
-          io.of(`/${e.id}`).emit('message', action.payload)
+          io.of(`/${e.id}`).emit('message', action.payload);
           break;
       }
     });
@@ -208,8 +207,9 @@ createConnection()
     app.use(cors({ origin: '*' }));
     app.use(bodyParser.json());
     const server = http.createServer(app);
-    const io = new Server(server, { 
-      cors: { origin: '*' } });
+    const io = new Server(server, {
+      cors: { origin: '*' },
+    });
     setupWsConnect(io);
     // register express routes from defined application routes
     Routes.forEach((route) => {
@@ -248,7 +248,7 @@ createConnection()
     }
 
     // start express server
-    server.listen(process.env.PORT)
+    server.listen(process.env.PORT);
     // insert new users for test
     console.log(`Server started on ${process.env.PORT}`);
   })

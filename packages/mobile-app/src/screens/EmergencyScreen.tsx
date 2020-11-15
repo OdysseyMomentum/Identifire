@@ -81,7 +81,7 @@ export default ({
       });
 
       await acceptEvent(socket, {
-        credentials: [],
+        credentials: [{ type: 'BHV', name: 'Timo Glastra' }],
         eventId: emergencyNotification.eventId,
         userId,
       });
