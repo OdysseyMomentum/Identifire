@@ -1,4 +1,4 @@
-import { Credential } from "..";
+import { Credential } from '..';
 
 export namespace WebSocket {
   export interface AcceptEvent {
@@ -47,10 +47,18 @@ export namespace WebSocket {
       content: string;
     };
   }
+
+  export interface EndEmergency {
+    type: 'dispatch->server/end-emergency-event';
+    payload: {
+      eventId: string;
+    };
+  }
+
   export type Action =
     | AcceptEvent
-    | ServerUpdateLocation
-    | MobileUpdateLocation
     | SubscribeToEvent
-    | Chat;
+    | MobileUpdateLocation
+    | Chat
+    | EndEmergency;
 }

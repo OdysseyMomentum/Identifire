@@ -17,9 +17,12 @@ class MyMap {
     return this.map;
   }
 
-  addCurrentEventPin({ lat, lon }: { lat: number; lon: number }) {
+  setCurrentEventPin({ lat, lon }: { lat: number; lon: number }) {
     const map = this.getMap();
-    const marker = new mapboxgl.Marker({ color: 'red' })
+    if (this.markers.currentEvent) {
+      this.markers.currentEvent.remove();
+    }
+    const marker = new mapboxgl.Marker({ color: 'red', draggable: true })
       .setLngLat([lon, lat])
       .addTo(map);
     map.setCenter({ lat, lon });
