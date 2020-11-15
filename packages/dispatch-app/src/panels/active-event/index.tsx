@@ -78,7 +78,7 @@ export const ActiveEvent: React.FunctionComponent = () => {
   ]);
 
   const setupWs = async () => {
-    const socket = connect(wsUrl);
+    const socket = connect(`${wsUrl}/${event.id}`);
 
     await new Promise((res) => {
       socket.on('connect', res);

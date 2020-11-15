@@ -52,11 +52,17 @@ async function handleUserAcceptEvent(
   user.credentialTypes = credentialObjects;
   user.webSocketConnection = socket;
   let emergency = await emergencyEventRepo.findOne(action.payload.eventId);
+<<<<<<< HEAD
   console.log(
     'handling user accept event. Got emergency',
     emergency,
     'and got user',
     user
+=======
+  socket.join(`/${emergency.id}`)
+  const requiredCreds = emergency.emergencyType.credentialTypes.map(
+    (x) => x.name
+>>>>>>> 554ab03... server: add chat forwarding with rooms
   );
   // TODO fix this
   // const requiredCreds = emergency.emergencyType.credentialTypes.map(
@@ -106,7 +112,16 @@ function setupWsConnect(io: Server) {
           await userRepo.save(user);
           break;
         case 'dispatch->server/subscribe-to-event':
+<<<<<<< HEAD
           console.log('dispatch subscribing to event');
+=======
+          let event = await emergencyEventRepo.findOne(
+            action.payload.eventId
+          );
+          socket.join(`/${event.id}`)
+          // event.socketId = socket.id
+          // await emergencyEventRepo.save(event)
+>>>>>>> 554ab03... server: add chat forwarding with rooms
           setInterval(async () => {
             let users = await userRepo.find({
               where: {
@@ -119,6 +134,7 @@ function setupWsConnect(io: Server) {
             let event = await emergencyEventRepo.findOne(
               action.payload.eventId
             );
+<<<<<<< HEAD
             console.log(
               `sending event info to dispatch. ${users.length} can help`,
               users,
@@ -142,6 +158,16 @@ function setupWsConnect(io: Server) {
             socket.emit('message', actionToSend);
           }, 5000);
           break;
+=======
+            // io.allSockets()[event.socketId].emit('message', [...event.users]);
+          }, 5000);
+          break;
+        case 'mobile<->dispatch/chat':
+          const e = await emergencyEventRepo.findOne(action.payload.eventId)
+          // io.allSockets()[event.socketId].emit('message', action.payload)
+          io.of(`/${e.id}`).emit('message', action.payload)
+          break;
+>>>>>>> 554ab03... server: add chat forwarding with rooms
       }
     });
   });
@@ -191,7 +217,8 @@ createConnection()
     app.use(cors({ origin: '*' }));
     app.use(bodyParser.json());
     const server = http.createServer(app);
-    const io = new Server(server, { cors: { origin: '*' } });
+    const io = new Server(server, { 
+      cors: { origin: '*' } });
     setupWsConnect(io);
     // register express routes from defined application routes
     Routes.forEach((route) => {
@@ -224,7 +251,6 @@ createConnection()
     }
 
     // start express server
-    server.listen(process.env.PORT);
 
     // insert new users for test
     console.log(`Server started on ${process.env.PORT}`);
