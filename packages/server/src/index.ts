@@ -15,6 +15,7 @@ import { eventNames } from 'process';
 import { CredentialType } from './entity/CredentialType';
 import { EmergencyEventType } from './entity/EmergencyEventType';
 import { geoToH3 } from 'h3-js';
+import * as path from 'path';
 
 dotenv.config();
 
@@ -230,6 +231,12 @@ createConnection()
           }
         }
       );
+    });
+
+    app.use(express.static(path.join(__dirname, '../../dispatch-app/dist')));
+
+    app.use((req, res, next) => {
+      res.sendFile(path.join(__dirname, '../../dispatch-app/dist/index.html'));
     });
 
     // setup express app here
